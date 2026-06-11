@@ -99,6 +99,7 @@
               <img v-if="app.qrCode" :src="app.qrCode" :alt="app.name" class="qr-image" />
               <div v-else class="qr-placeholder">加载中...</div>
             </div>
+            <div class="qr-link">{{ getPreviewUrl(app.entry) }}</div>
             <div class="app-info">
               <div class="app-icon" :style="{ background: app.color }">
                 <el-icon><Iphone /></el-icon>
@@ -137,31 +138,35 @@ const activeMenu = computed(() => route.path)
 const isSystemPage = computed(() => route.meta.requiresAuth === true)
 const mobileDialogVisible = ref(false)
 
-const baseUrl = 'http://192.168.10.172:5173'
+const getPreviewUrl = (entry) => {
+  const url = new URL(`${import.meta.env.BASE_URL}login`, window.location.origin)
+  url.searchParams.set('entry', entry)
+  return url.toString()
+}
 
 const mobileApps = ref([
   { 
     name: '皖政通', 
     target: '管理人员移动审核与现场核查', 
     scene: '政务端', 
+    entry: 'wanzhengtong',
     color: 'linear-gradient(135deg, #2563eb, #60a5fa)',
-    url: baseUrl,
     qrCode: ''
   },
   { 
     name: '皖企通', 
     target: '主体填报、青贮申报、农药查询', 
     scene: '企业端', 
+    entry: 'wanqitong',
     color: 'linear-gradient(135deg, #16a34a, #86efac)',
-    url: baseUrl,
     qrCode: ''
   },
   { 
     name: '现场核查APP', 
     target: 'GPS定位、拍照水印、离线采集', 
     scene: '外业端', 
+    entry: 'field-check',
     color: 'linear-gradient(135deg, #d97706, #fbbf24)',
-    url: baseUrl,
     qrCode: ''
   }
 ])
@@ -169,7 +174,7 @@ const mobileApps = ref([
 onMounted(async () => {
   for (const app of mobileApps.value) {
     try {
-      app.qrCode = await QRCode.toDataURL(app.url, {
+      app.qrCode = await QRCode.toDataURL(getPreviewUrl(app.entry), {
         width: 180,
         margin: 2,
         color: {
@@ -307,6 +312,15 @@ const handleLogout = () => {
 .qr-placeholder {
   color: #94a3b8;
   font-size: 14px;
+}
+
+.qr-link {
+  max-width: 100%;
+  margin: -6px 0 14px;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.35;
+  word-break: break-all;
 }
 
 .app-info {
