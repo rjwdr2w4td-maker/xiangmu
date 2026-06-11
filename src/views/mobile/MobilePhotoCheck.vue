@@ -232,6 +232,7 @@ const handleSubmit = () => {
   if (checkForm.actualArea === 0) {
     ElMessage.warning('请输入实际面积')
     return
+  }
   
   ElMessage.success('核查结果提交成功')
   router.back()

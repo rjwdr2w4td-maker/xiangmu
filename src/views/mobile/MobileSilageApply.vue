@@ -61,7 +61,7 @@
           </el-form-item>
           <el-form-item label="种植地块">
             <el-input v-model="applyForm.location" placeholder="请输入地块名称或位置" />
-          </div>
+          </el-form-item>
           <el-form-item label="收储企业">
             <el-select v-model="applyForm.storageCompany" placeholder="请选择" style="width: 100%">
               <el-option label="合肥奶牛养殖有限公司" value="company1" />

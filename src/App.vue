@@ -135,7 +135,8 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const activeMenu = computed(() => route.path)
-const isSystemPage = computed(() => route.meta.requiresAuth === true)
+const isMobilePage = computed(() => route.meta.isMobile === true || route.path.startsWith('/mobile'))
+const isSystemPage = computed(() => route.meta.requiresAuth === true && !isMobilePage.value)
 const mobileDialogVisible = ref(false)
 
 const getPreviewUrl = (entry) => {
