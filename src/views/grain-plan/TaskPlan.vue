@@ -99,8 +99,8 @@
         <el-divider content-position="left">市级任务分解</el-divider>
 
         <el-table :data="decomposeForm.cities" border style="width: 100%">
-          <el-table-column prop="name" label="市级名称" width="150" />
-          <el-table-column label="计划面积(亩)" width="200">
+          <el-table-column prop="name" label="市级名称" min-width="150" />
+          <el-table-column label="计划面积(亩)" min-width="200">
             <template #default="{ row }">
               <el-input-number
                 v-model="row.planArea"
@@ -111,7 +111,7 @@
               />
             </template>
           </el-table-column>
-          <el-table-column label="承担主体类型" width="250">
+          <el-table-column label="承担主体类型" min-width="280">
             <template #default="{ row }">
               <el-checkbox-group v-model="row.undertakerTypes">
                 <el-checkbox label="large_farmer">规模大户</el-checkbox>
@@ -120,7 +120,7 @@
               </el-checkbox-group>
             </template>
           </el-table-column>
-          <el-table-column label="关联地块" width="150">
+          <el-table-column label="关联地块" width="120">
             <template #default="{ row }">
               <el-button size="small" type="primary" @click="handleSelectPlots(row)">
                 选择地块
@@ -160,18 +160,18 @@
       <el-divider content-position="left">市级任务分解详情（点击可钻取到县）</el-divider>
 
       <el-table :data="viewData.decomposition" border style="width: 100%">
-        <el-table-column prop="name" label="市级名称" width="150" />
-        <el-table-column prop="planArea" label="计划面积(亩)" width="150" sortable>
+        <el-table-column prop="name" label="市级名称" min-width="150" />
+        <el-table-column prop="planArea" label="计划面积(亩)" min-width="150" sortable>
           <template #default="{ row }">
             {{ row.planArea }}
           </template>
         </el-table-column>
-        <el-table-column prop="actualArea" label="已落实面积" width="150" sortable>
+        <el-table-column prop="actualArea" label="已落实面积" min-width="150" sortable>
           <template #default="{ row }">
             {{ row.actualArea }}
           </template>
         </el-table-column>
-        <el-table-column prop="progress" label="完成度" width="120" sortable>
+        <el-table-column prop="progress" label="完成度" min-width="160" sortable>
           <template #default="{ row }">
             <el-progress
               :percentage="row.progress"
@@ -200,10 +200,10 @@
       <h4 style="margin-bottom: 15px">{{ countyData.cityName }} - 任务分解到县</h4>
       
       <el-table :data="countyData.counties" border style="width: 100%">
-        <el-table-column prop="name" label="县级名称" width="150" />
-        <el-table-column prop="planArea" label="计划面积(亩)" width="150" sortable />
-        <el-table-column prop="actualArea" label="已落实面积" width="150" sortable />
-        <el-table-column prop="progress" label="完成度" width="150" sortable>
+        <el-table-column prop="name" label="县级名称" min-width="150" />
+        <el-table-column prop="planArea" label="计划面积(亩)" min-width="150" sortable />
+        <el-table-column prop="actualArea" label="已落实面积" min-width="150" sortable />
+        <el-table-column prop="progress" label="完成度" min-width="160" sortable>
           <template #default="{ row }">
             <el-progress
               :percentage="row.progress"
@@ -211,7 +211,7 @@
             />
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="160">
           <template #default="{ row }">
             <el-button size="small" type="primary" @click="handleViewFarmers(row)">
               查看种植主体(到户)

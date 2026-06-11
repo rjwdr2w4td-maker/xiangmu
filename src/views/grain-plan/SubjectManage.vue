@@ -132,9 +132,9 @@
             添加地块
           </el-button>
           <el-table :data="formData.plots" border style="width: 100%; margin-top: 10px">
-            <el-table-column prop="plotId" label="地块编号" width="120" />
-            <el-table-column prop="area" label="面积(亩)" width="100" />
-            <el-table-column prop="cropType" label="作物类型" width="120">
+            <el-table-column prop="plotId" label="地块编号" min-width="160" />
+            <el-table-column prop="area" label="面积(亩)" min-width="120" />
+            <el-table-column prop="cropType" label="作物类型" min-width="180">
               <template #default="{ row }">
                 <el-select v-model="row.cropType" size="small">
                   <el-option label="小麦" value="wheat" />
@@ -182,14 +182,14 @@
       <div style="margin-top: 20px">
         <h4>地块信息（到田数据钻取展示）</h4>
         <el-table :data="viewData.plots" border style="width: 100%">
-          <el-table-column prop="plotId" label="地块编号" width="120" />
-          <el-table-column prop="area" label="面积(亩)" width="100" />
-          <el-table-column prop="cropType" label="作物类型" width="120">
+          <el-table-column prop="plotId" label="地块编号" min-width="140" />
+          <el-table-column prop="area" label="面积(亩)" min-width="100" />
+          <el-table-column prop="cropType" label="作物类型" min-width="120">
             <template #default="{ row }">
               {{ getCropName(row.cropType) }}
             </template>
           </el-table-column>
-          <el-table-column label="地理位置" width="150">
+          <el-table-column label="地理位置" min-width="180">
             <template #default="{ row }">
               <el-tag type="info" size="small">
                 {{ row.location[0] }}°, {{ row.location[1] }}°

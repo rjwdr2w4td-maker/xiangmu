@@ -101,10 +101,10 @@
       <div v-if="drillDownLevel === 'city'">
         <h4 style="margin-bottom: 15px">{{ drillDownData.name }} - 县级数据钻取</h4>
         <el-table :data="drillDownData.counties" border style="width: 100%">
-          <el-table-column prop="name" label="县级名称" width="150" />
-          <el-table-column prop="planArea" label="计划面积(亩)" width="150" />
-          <el-table-column prop="actualArea" label="已播面积(亩)" width="150" />
-          <el-table-column prop="progress" label="完成度" width="150">
+          <el-table-column prop="name" label="县级名称" min-width="150" />
+          <el-table-column prop="planArea" label="计划面积(亩)" min-width="150" />
+          <el-table-column prop="actualArea" label="已播面积(亩)" min-width="150" />
+          <el-table-column prop="progress" label="完成度" min-width="160">
             <template #default="{ row }">
               <el-progress
                 :percentage="row.progress"
@@ -125,16 +125,16 @@
       <div v-else-if="drillDownLevel === 'county'">
         <h4 style="margin-bottom: 15px">{{ drillDownData.name }} - 种植主体（到户到田）</h4>
         <el-table :data="drillDownData.farmers" border style="width: 100%">
-          <el-table-column prop="name" label="主体名称（到户）" width="200" />
-          <el-table-column prop="type" label="主体类型" width="150">
+          <el-table-column prop="name" label="主体名称（到户）" min-width="180" />
+          <el-table-column prop="type" label="主体类型" min-width="140">
             <template #default="{ row }">
               <el-tag>{{ getTypeName(row.type) }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="totalArea" label="种植面积(亩)" width="120" />
-          <el-table-column prop="sowedArea" label="已播面积(亩)" width="120" />
-          <el-table-column prop="plotCount" label="地块数量" width="100" />
-          <el-table-column label="操作" width="180">
+          <el-table-column prop="totalArea" label="种植面积(亩)" min-width="120" />
+          <el-table-column prop="sowedArea" label="已播面积(亩)" min-width="120" />
+          <el-table-column prop="plotCount" label="地块数量" min-width="100" />
+          <el-table-column label="操作" width="140">
             <template #default="{ row }">
               <el-button size="small" type="primary" @click="handleDrillDownFarmer(row)">
                 查看地块(到田)
@@ -147,22 +147,22 @@
       <div v-else-if="drillDownLevel === 'farmer'">
         <h4 style="margin-bottom: 15px">{{ drillDownData.name }} - 地块详情（到田）</h4>
         <el-table :data="drillDownData.plots" border style="width: 100%">
-          <el-table-column prop="plotId" label="地块编号" width="120" />
-          <el-table-column prop="area" label="面积(亩)" width="100" />
-          <el-table-column prop="cropType" label="作物类型" width="120">
+          <el-table-column prop="plotId" label="地块编号" min-width="140" />
+          <el-table-column prop="area" label="面积(亩)" min-width="100" />
+          <el-table-column prop="cropType" label="作物类型" min-width="120">
             <template #default="{ row }">
               <el-tag>{{ getCropName(row.cropType) }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="sowingTime" label="播种时间" width="120" />
-          <el-table-column label="地理位置" width="150">
+          <el-table-column prop="sowingTime" label="播种时间" min-width="120" />
+          <el-table-column label="地理位置" min-width="180">
             <template #default="{ row }">
               <el-tag type="info" size="small">
                 {{ row.location[0].toFixed(2) }}°, {{ row.location[1].toFixed(2) }}°
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="120">
+          <el-table-column label="操作" width="110">
             <template #default="{ row }">
               <el-button size="small" type="primary" @click="handleViewOnMap(row)">
                 定位地图
