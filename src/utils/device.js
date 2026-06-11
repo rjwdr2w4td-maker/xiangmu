@@ -15,8 +15,18 @@ export function isMobile() {
 
 export function getEntryType() {
   if (typeof window === 'undefined') return null
+  
   const urlParams = new URLSearchParams(window.location.search)
-  return urlParams.get('entry')
+  const queryEntry = urlParams.get('entry')
+  if (queryEntry) return queryEntry
+  
+  const pathname = window.location.pathname
+  const mobilePathMatch = pathname.match(/\/mobile\/(?:home\/)?([^/]+)/)
+  if (mobilePathMatch && mobilePathMatch[1]) {
+    return mobilePathMatch[1]
+  }
+  
+  return null
 }
 
 export function redirectByDevice() {

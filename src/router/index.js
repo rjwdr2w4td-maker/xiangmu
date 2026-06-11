@@ -144,7 +144,12 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   
   if (to.meta.requiresAuth && !token) {
-    next({ path: '/login', query: { redirect: to.fullPath } })
+    if (to.meta.isMobile || to.path.startsWith('/mobile/')) {
+      const entry = to.params.entry || to.path.split('/').pop()
+      next({ path: `/mobile/${entry || 'wanzhengtong'}` })
+    } else {
+      next({ path: '/login', query: { redirect: to.fullPath } })
+    }
   } else {
     next()
   }

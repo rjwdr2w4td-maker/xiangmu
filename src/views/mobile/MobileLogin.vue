@@ -90,17 +90,17 @@
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useUserStore } from '@/stores/user'
-import { getEntryType } from '@/utils/device'
 
 const router = useRouter()
+const route = useRoute()
 const userStore = useUserStore()
 const formRef = ref(null)
 const loading = ref(false)
 
-const entryType = getEntryType()
+const entryType = computed(() => route.params.entry || 'wanzhengtong')
 const entryTitle = computed(() => {
   const titles = {
     wanzhengtong: '皖政通',
@@ -143,7 +143,8 @@ const handleLogin = async () => {
         })
 
         ElMessage.success('登录成功')
-        router.push(`/mobile/home/${entryType || 'wanzhengtong'}`)
+        const currentEntry = entryType.value
+        router.push({ name: 'MobileHome', params: { entry: currentEntry } })
         loading.value = false
       }, 500)
     }
