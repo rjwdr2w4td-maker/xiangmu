@@ -124,7 +124,7 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
@@ -138,6 +138,14 @@ const activeMenu = computed(() => route.path)
 const isMobilePage = computed(() => route.meta.isMobile === true || route.path.startsWith('/mobile'))
 const isSystemPage = computed(() => route.meta.requiresAuth === true && !isMobilePage.value)
 const mobileDialogVisible = ref(false)
+
+watch(
+  isMobilePage,
+  (value) => {
+    document.body.classList.toggle('mobile-page-body', value)
+  },
+  { immediate: true }
+)
 
 const getPreviewUrl = (entry) => {
   const url = new URL(`${import.meta.env.BASE_URL}mobile/${entry}`, window.location.origin)
