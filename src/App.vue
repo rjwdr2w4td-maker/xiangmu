@@ -139,8 +139,7 @@ const isSystemPage = computed(() => route.meta.requiresAuth === true)
 const mobileDialogVisible = ref(false)
 
 const getPreviewUrl = (entry) => {
-  const url = new URL(`${import.meta.env.BASE_URL}login`, window.location.origin)
-  url.searchParams.set('entry', entry)
+  const url = new URL(`${import.meta.env.BASE_URL}mobile/${entry}`, window.location.origin)
   return url.toString()
 }
 

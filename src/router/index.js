@@ -120,6 +120,18 @@ const routes = [
     name: 'PesticideMap',
     component: () => import('@/views/pesticide/PesticideMap.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/mobile/:entry?',
+    name: 'MobileLogin',
+    component: () => import('@/views/mobile/MobileLogin.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/mobile/home/:entry',
+    name: 'MobileHome',
+    component: () => import('@/views/mobile/MobileHome.vue'),
+    meta: { requiresAuth: true, isMobile: true }
   }
 ]
 
