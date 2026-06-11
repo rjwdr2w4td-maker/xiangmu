@@ -281,24 +281,7 @@ const harvestFormData = reactive({
   reporter: ''
 })
 
-const detailData = ref([
-  {
-    farmerName: '张明家庭农场',
-    plotId: 'PLOT001',
-    plotArea: 150,
-    sowedArea: 150,
-    sowingTime: '2026-03-10',
-    cropVariety: '济麦22'
-  },
-  {
-    farmerName: '李华种植专业合作社',
-    plotId: 'PLOT004',
-    plotArea: 420,
-    sowedArea: 420,
-    sowingTime: '2026-03-12',
-    cropVariety: '郑麦9023'
-  }
-])
+const detailData = ref([])
 
 const detailDialogVisible = ref(false)
 const viewDetailDialogVisible = ref(false)
@@ -413,16 +396,43 @@ const handleDeleteDetail = (row) => {
 }
 
 const handleSaveDetail = () => {
+  if (!detailFormData.farmerId) {
+    ElMessage.warning('请选择种植主体')
+    return
+  }
+  if (!detailFormData.plotId) {
+    ElMessage.warning('请选择地块编号')
+    return
+  }
+  if (detailFormData.sowedArea === 0) {
+    ElMessage.warning('请输入已播面积')
+    return
+  }
+  if (!detailFormData.sowingTime) {
+    ElMessage.warning('请选择播种时间')
+    return
+  }
+  if (!detailFormData.cropVariety) {
+    ElMessage.warning('请输入作物品种')
+    return
+  }
+
   const farmerNames = {
     'SUBJ001': '张明家庭农场',
     'SUBJ002': '李华种植专业合作社',
     'SUBJ003': '王强规模种植大户'
   }
   
+  const plotAreas = {
+    'PLOT001': 150,
+    'PLOT002': 180,
+    'PLOT003': 190
+  }
+  
   detailData.value.push({
     farmerName: farmerNames[detailFormData.farmerId],
     plotId: detailFormData.plotId,
-    plotArea: 150,
+    plotArea: plotAreas[detailFormData.plotId] || 0,
     sowedArea: detailFormData.sowedArea,
     sowingTime: new Date(detailFormData.sowingTime).toISOString().split('T')[0],
     cropVariety: detailFormData.cropVariety
@@ -430,6 +440,12 @@ const handleSaveDetail = () => {
   
   ElMessage.success('进度明细已保存')
   detailDialogVisible.value = false
+  
+  detailFormData.farmerId = ''
+  detailFormData.plotId = ''
+  detailFormData.sowedArea = 0
+  detailFormData.sowingTime = ''
+  detailFormData.cropVariety = ''
 }
 
 calculateProgress()
