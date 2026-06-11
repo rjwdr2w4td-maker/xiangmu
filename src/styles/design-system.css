@@ -1,0 +1,233 @@
+:root {
+  --agri-bg: #07111f;
+  --agri-bg-soft: #102a43;
+  --agri-panel: rgba(255, 255, 255, 0.9);
+  --agri-panel-strong: rgba(255, 255, 255, 0.97);
+  --agri-border: rgba(59, 130, 246, 0.18);
+  --agri-primary: #1d4ed8;
+  --agri-primary-light: #38bdf8;
+  --agri-primary-dark: #1e3a8a;
+  --agri-gold: #f59e0b;
+  --agri-green: #16a34a;
+  --agri-blue: #0ea5e9;
+  --agri-orange: #f97316;
+  --agri-red: #dc2626;
+  --agri-text: #14213d;
+  --agri-muted: #64748b;
+  --agri-shadow: 0 18px 45px rgba(30, 64, 175, 0.12);
+  --agri-shadow-strong: 0 26px 70px rgba(15, 23, 42, 0.22);
+  --agri-radius: 22px;
+  --agri-radius-sm: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+  font-family: "DIN Alternate", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: var(--agri-text);
+  background: #eef4ff;
+}
+
+body {
+  overflow: hidden;
+}
+
+.el-button {
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.el-button--primary {
+  --el-button-bg-color: var(--agri-primary);
+  --el-button-border-color: var(--agri-primary);
+  --el-button-hover-bg-color: var(--agri-primary-light);
+  --el-button-hover-border-color: var(--agri-primary-light);
+  --el-button-active-bg-color: var(--agri-primary-dark);
+  --el-button-active-border-color: var(--agri-primary-dark);
+  box-shadow: 0 10px 24px rgba(29, 78, 216, 0.22);
+}
+
+.el-card {
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  border-radius: var(--agri-radius);
+  background: var(--agri-panel-strong);
+  box-shadow: var(--agri-shadow);
+  overflow: hidden;
+}
+
+.el-card__header {
+  border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+  background: linear-gradient(90deg, rgba(239, 246, 255, 0.98), rgba(248, 250, 252, 0.9));
+  font-weight: 800;
+  color: #172554;
+}
+
+.el-table {
+  border-radius: 16px;
+  overflow: hidden;
+  --el-table-header-bg-color: #eff6ff;
+  --el-table-header-text-color: #1e3a8a;
+  --el-table-row-hover-bg-color: #f0f9ff;
+}
+
+.el-table th.el-table__cell {
+  font-weight: 800;
+}
+
+.el-dialog {
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(18px);
+}
+
+.el-dialog__header {
+  padding: 20px 24px 16px;
+  background: transparent;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+  margin: 0;
+}
+
+.el-dialog__title {
+  color: #172554;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: #64748b;
+  font-size: 18px;
+  transition: color 0.2s;
+}
+
+.el-dialog__headerbtn .el-dialog__close:hover {
+  color: var(--agri-primary);
+}
+
+.el-tag {
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.el-input__wrapper,
+.el-select__wrapper,
+.el-textarea__inner {
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.14) inset;
+}
+
+.el-input__wrapper.is-focus,
+.el-select__wrapper.is-focused {
+  box-shadow: 0 0 0 1px var(--agri-primary) inset, 0 0 0 4px rgba(56, 189, 248, 0.14);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(37, 99, 235, 0.42);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.page-shell,
+.subject-manage,
+.task-plan,
+.task-audit,
+.progress-report,
+.disaster-manage,
+.event-discovery,
+.event-process,
+.event-handle,
+.planting-manage,
+.storage-manage,
+.trace-query,
+.production-ledger,
+.business-ledger,
+.grain-map,
+.security-map,
+.silage-map,
+.pesticide-map {
+  position: relative;
+}
+
+.page-title,
+.module-title {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: #172554;
+  margin: 0 0 20px;
+}
+
+.el-form--inline,
+.filter-form,
+.search-form,
+.query-form {
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  box-shadow: 0 14px 36px rgba(30, 64, 175, 0.07);
+  margin-bottom: 18px;
+}
+
+.toolbar,
+.action-bar,
+.operation-bar,
+.table-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+}
+
+.map-container,
+.map-wrapper,
+#map,
+.leaflet-container {
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  box-shadow: 0 24px 58px rgba(30, 64, 175, 0.12);
+}
+
+.stat-card,
+.overview-card,
+.metric-card,
+.summary-card {
+  border-radius: var(--agri-radius);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(239, 246, 255, 0.88));
+  box-shadow: var(--agri-shadow);
+}
+
+.el-tabs__item {
+  font-weight: 800;
+}
+
+.el-tabs__active-bar {
+  background: linear-gradient(90deg, var(--agri-gold), var(--agri-primary-light));
+  height: 3px;
+  border-radius: 999px;
+}
+
+.el-timeline-item__node {
+  background: var(--agri-primary-light);
+}
+
+.el-timeline-item__tail {
+  border-left-color: rgba(59, 130, 246, 0.18);
+}
