@@ -197,6 +197,28 @@ body.mobile-page-body #app {
   margin-bottom: 18px;
 }
 
+.search-form .el-form-item,
+.query-form .el-form-item {
+  margin-bottom: 0;
+}
+
+.search-form .el-select,
+.query-form .el-select {
+  width: 160px !important;
+  min-width: 120px;
+}
+
+.search-form .el-input,
+.query-form .el-input {
+  width: 180px !important;
+  min-width: 140px;
+}
+
+.search-form .el-date-editor,
+.query-form .el-date-editor {
+  width: 160px !important;
+}
+
 .toolbar,
 .action-bar,
 .operation-bar,
