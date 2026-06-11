@@ -338,19 +338,57 @@ const getProgressTag = (progress) => {
 }
 
 const handleSaveSowing = () => {
+  if (!selectedTask.value) {
+    ElMessage.warning('请先选择种植主体')
+    return
+  }
+  selectedTask.value.sowingProgress = sowingFormData.value.sowingProgress
+  selectedTask.value.sowedArea = sowingFormData.value.sowedArea
+  selectedTask.value.lastUpdate = new Date().toISOString().split('T')[0]
   ElMessage.success('播种进度已保存')
 }
 
 const handleSubmitSowing = () => {
+  if (!selectedTask.value) {
+    ElMessage.warning('请先选择种植主体')
+    return
+  }
+  if (sowingFormData.value.sowingProgress === 0) {
+    ElMessage.warning('请先填写播种进度')
+    return
+  }
+  selectedTask.value.sowingProgress = sowingFormData.value.sowingProgress
+  selectedTask.value.sowedArea = sowingFormData.value.sowedArea
+  selectedTask.value.status = 'submitted'
+  selectedTask.value.lastUpdate = new Date().toISOString().split('T')[0]
   ElMessage.success('播种进度已提交上报至市级')
 }
 
 const handleSaveHarvest = () => {
+  if (!selectedTask.value) {
+    ElMessage.warning('请先选择种植主体')
+    return
+  }
+  selectedTask.value.harvestProgress = harvestFormData.value.harvestProgress
+  selectedTask.value.harvestedArea = harvestFormData.value.harvestedArea
+  selectedTask.value.lastUpdate = new Date().toISOString().split('T')[0]
   ElMessage.success('收获进度已保存')
 }
 
 const handleSubmitHarvest = () => {
-  ElMessage.success('收获进度已提交上报至市级')
+  if (!selectedTask.value) {
+    ElMessage.warning('请先选择种植主体')
+    return
+  }
+  if (harvestFormData.value.harvestProgress === 0) {
+    ElMessage.warning('请先填写收获进度')
+    return
+  }
+  selectedTask.value.harvestProgress = harvestFormData.value.harvestProgress
+  selectedTask.value.harvestedArea = harvestFormData.value.harvestedArea
+  selectedTask.value.status = 'completed'
+  selectedTask.value.lastUpdate = new Date().toISOString().split('T')[0]
+  ElMessage.success('收获进度已提交上报')
 }
 
 const handleAddDetail = () => {

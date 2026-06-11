@@ -224,6 +224,36 @@
         <el-tag type="success" style="margin-top: 8px">已定位到地图中心</el-tag>
       </div>
     </el-dialog>
+
+    <el-dialog v-model="plotDialogVisible" title="添加地块" width="500px">
+      <el-form :model="plotForm" label-width="100px">
+        <el-form-item label="地块编号" required>
+          <el-input v-model="plotForm.plotId" placeholder="请输入地块编号" />
+        </el-form-item>
+        <el-form-item label="面积(亩)" required>
+          <el-input-number v-model="plotForm.area" :min="0" :step="10" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="作物类型" required>
+          <el-select v-model="plotForm.cropType" placeholder="请选择作物类型" style="width: 100%">
+            <el-option label="小麦" value="wheat" />
+            <el-option label="水稻" value="rice" />
+            <el-option label="玉米" value="corn" />
+            <el-option label="大豆" value="soybean" />
+            <el-option label="油菜" value="rapeseed" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="经度">
+          <el-input-number v-model="plotForm.location[0]" :precision="6" :step="0.001" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="纬度">
+          <el-input-number v-model="plotForm.location[1]" :precision="6" :step="0.001" style="width: 100%" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="plotDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSavePlot">保存</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -247,7 +277,14 @@ const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const viewDialogVisible = ref(false)
 const mapDialogVisible = ref(false)
+const plotDialogVisible = ref(false)
 const formRef = ref(null)
+const plotForm = ref({
+  plotId: '',
+  area: 0,
+  cropType: '',
+  location: [117.27, 31.86]
+})
 
 const subjects = ref([...plantingSubjects])
 
@@ -363,12 +400,36 @@ const handleDelete = (row) => {
 }
 
 const handleAddPlot = () => {
-  formData.plots.push({
+  plotForm.value = {
     plotId: 'PLOT' + Date.now(),
     area: 0,
     cropType: '',
-    location: [117 + Math.random() * 0.5, 31 + Math.random() * 0.2]
+    location: [117.27, 31.86]
+  }
+  plotDialogVisible.value = true
+}
+
+const handleSavePlot = () => {
+  if (!plotForm.value.plotId) {
+    ElMessage.warning('请输入地块编号')
+    return
+  }
+  if (plotForm.value.area === 0) {
+    ElMessage.warning('请输入地块面积')
+    return
+  }
+  if (!plotForm.value.cropType) {
+    ElMessage.warning('请选择作物类型')
+    return
+  }
+  formData.plots.push({
+    plotId: plotForm.value.plotId,
+    area: plotForm.value.area,
+    cropType: plotForm.value.cropType,
+    location: plotForm.value.location
   })
+  plotDialogVisible.value = false
+  ElMessage.success('地块添加成功')
 }
 
 const handleDeletePlot = (index) => {

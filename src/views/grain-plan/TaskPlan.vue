@@ -240,6 +240,42 @@
         <el-table-column prop="contact" label="联系人" min-width="130" />
       </el-table>
     </el-dialog>
+
+    <el-dialog v-model="addDialogVisible" title="新增种植计划" width="600px">
+      <el-form :model="addForm" label-width="100px" :rules="addFormRules" ref="addFormRef">
+        <el-form-item label="计划名称" prop="name">
+          <el-input v-model="addForm.name" placeholder="请输入计划名称" />
+        </el-form-item>
+        <el-form-item label="年度" prop="year">
+          <el-date-picker
+            v-model="addForm.year"
+            type="year"
+            placeholder="选择年度"
+            value-format="YYYY"
+            style="width: 100%"
+          />
+        </el-form-item>
+        <el-form-item label="作物类型" prop="cropType">
+          <el-select v-model="addForm.cropType" placeholder="请选择作物类型" style="width: 100%">
+            <el-option label="小麦" value="wheat" />
+            <el-option label="水稻" value="rice" />
+            <el-option label="玉米" value="corn" />
+            <el-option label="大豆" value="soybean" />
+            <el-option label="油菜" value="rapeseed" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="总面积(亩)" prop="totalArea">
+          <el-input-number v-model="addForm.totalArea" :min="0" :step="10000" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="addForm.remark" type="textarea" :rows="2" placeholder="请输入备注信息" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="addDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveAdd">保存</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -273,6 +309,22 @@ const viewData = ref({})
 const countyData = ref({})
 const subjectDialogTitle = ref('')
 const subjectData = ref([])
+
+const addDialogVisible = ref(false)
+const addFormRef = ref(null)
+const addForm = ref({
+  name: '',
+  year: new Date().getFullYear().toString(),
+  cropType: '',
+  totalArea: 0,
+  remark: ''
+})
+const addFormRules = {
+  name: [{ required: true, message: '请输入计划名称', trigger: 'blur' }],
+  year: [{ required: true, message: '请选择年度', trigger: 'change' }],
+  cropType: [{ required: true, message: '请选择作物类型', trigger: 'change' }],
+  totalArea: [{ required: true, message: '请输入总面积', trigger: 'blur' }]
+}
 
 const filteredTasks = computed(() => {
   let result = tasks.value
@@ -334,18 +386,37 @@ const handleSearch = () => {
 }
 
 const handleAdd = () => {
-  const nextTask = {
-    id: 'TASK' + Date.now(),
-    year: parseInt(searchForm.year),
-    name: `${searchForm.year}年度${searchForm.cropType ? getCropName(searchForm.cropType) : '粮食'}种植演示计划`,
-    cropType: searchForm.cropType || 'wheat',
-    totalArea: 1000000,
-    status: 'pending',
-    createTime: new Date().toISOString().split('T')[0],
-    decomposition: []
+  addForm.value = {
+    name: '',
+    year: new Date().getFullYear().toString(),
+    cropType: '',
+    totalArea: 0,
+    remark: ''
   }
-  tasks.value.unshift(nextTask)
-  ElMessage.success('新增计划已加入列表')
+  addDialogVisible.value = true
+}
+
+const handleSaveAdd = async () => {
+  if (!addFormRef.value) return
+  
+  await addFormRef.value.validate((valid) => {
+    if (valid) {
+      const newTask = {
+        id: 'TASK' + Date.now(),
+        year: parseInt(addForm.value.year),
+        name: addForm.value.name,
+        cropType: addForm.value.cropType,
+        totalArea: addForm.value.totalArea,
+        status: 'pending',
+        createTime: new Date().toISOString().split('T')[0],
+        decomposition: [],
+        remark: addForm.value.remark
+      }
+      tasks.value.unshift(newTask)
+      addDialogVisible.value = false
+      ElMessage.success('新增计划成功')
+    }
+  })
 }
 
 const handleView = (row) => {
