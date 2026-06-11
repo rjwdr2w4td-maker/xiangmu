@@ -234,10 +234,10 @@
       />
       <el-table :data="subjectData" border style="width: 100%">
         <el-table-column prop="name" label="主体名称" min-width="180" />
-        <el-table-column prop="type" label="主体类型" width="130" />
-        <el-table-column prop="area" label="落实面积(亩)" width="130" />
-        <el-table-column prop="plotCount" label="地块数" width="90" />
-        <el-table-column prop="contact" label="联系人" width="120" />
+        <el-table-column prop="type" label="主体类型" min-width="140" />
+        <el-table-column prop="area" label="落实面积(亩)" min-width="130" />
+        <el-table-column prop="plotCount" label="地块数" min-width="100" />
+        <el-table-column prop="contact" label="联系人" min-width="130" />
       </el-table>
     </el-dialog>
   </div>

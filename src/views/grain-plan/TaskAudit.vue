@@ -84,9 +84,9 @@
       <el-divider content-position="left">任务分解详情</el-divider>
 
       <el-table :data="currentPlan.decomposition" border style="width: 100%">
-        <el-table-column prop="name" label="市级名称" width="150" />
-        <el-table-column prop="planArea" label="计划面积(亩)" width="150" />
-        <el-table-column label="承担主体类型" min-width="200">
+        <el-table-column prop="name" label="市级名称" min-width="180" />
+        <el-table-column prop="planArea" label="计划面积(亩)" min-width="200" />
+        <el-table-column label="承担主体类型" min-width="280">
           <template #default="{ row }">
             <el-tag v-for="type in row.undertakerTypes" :key="type" style="margin: 2px">
               {{ getTypeName(type) }}

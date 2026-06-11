@@ -112,12 +112,12 @@
             </el-button>
 
             <el-table :data="detailData" border style="width: 100%">
-              <el-table-column prop="farmerName" label="种植主体（到户）" width="180" />
-              <el-table-column prop="plotId" label="地块编号（到田）" width="120" />
-              <el-table-column prop="plotArea" label="地块面积" width="100" />
-              <el-table-column prop="sowedArea" label="已播面积" width="100" />
-              <el-table-column prop="sowingTime" label="播种时间" width="120" />
-              <el-table-column prop="cropVariety" label="作物品种" width="120" />
+              <el-table-column prop="farmerName" label="种植主体（到户）" min-width="180" />
+              <el-table-column prop="plotId" label="地块编号（到田）" min-width="140" />
+              <el-table-column prop="plotArea" label="地块面积" min-width="110" />
+              <el-table-column prop="sowedArea" label="已播面积" min-width="110" />
+              <el-table-column prop="sowingTime" label="播种时间" min-width="140" />
+              <el-table-column prop="cropVariety" label="作物品种" min-width="140" />
               <el-table-column label="操作" width="150">
                 <template #default="{ row }">
                   <el-button size="small" @click="handleViewDetail(row)">查看</el-button>
