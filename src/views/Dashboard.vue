@@ -52,7 +52,7 @@
 
     <el-row :gutter="20" style="margin-top: 20px">
       <el-col :span="16">
-        <el-card>
+        <el-card class="chart-card">
           <template #header>
             <div class="card-header">
               <span>全省播种进度概览</span>
@@ -62,12 +62,12 @@
               </el-radio-group>
             </div>
           </template>
-          <div ref="chartRef" style="height: 350px"></div>
+          <div ref="chartRef" class="chart-container"></div>
         </el-card>
       </el-col>
       
       <el-col :span="8">
-        <el-card>
+        <el-card class="chart-card">
           <template #header>
             <span>待办事项</span>
           </template>
@@ -91,35 +91,37 @@
 
     <el-row :gutter="20" style="margin-top: 20px">
       <el-col :span="12">
-        <el-card>
+        <el-card class="chart-card">
           <template #header>
             <span>最新预警信息</span>
           </template>
-          <el-timeline>
-            <el-timeline-item
-              v-for="warning in warnings"
-              :key="warning.id"
-              :timestamp="warning.issueTime"
-              placement="top"
-            >
-              <el-card>
-                <h4>{{ warning.title }}</h4>
-                <p>{{ warning.content }}</p>
-                <el-tag :type="getWarningType(warning.level)" size="small">
-                  {{ warning.levelName }}
-                </el-tag>
-              </el-card>
-            </el-timeline-item>
-          </el-timeline>
+          <div class="warning-list">
+            <el-timeline>
+              <el-timeline-item
+                v-for="warning in warnings"
+                :key="warning.id"
+                :timestamp="warning.issueTime"
+                placement="top"
+              >
+                <div class="warning-item">
+                  <h4>{{ warning.title }}</h4>
+                  <p>{{ warning.content }}</p>
+                  <el-tag :type="getWarningType(warning.level)" size="small">
+                    {{ warning.levelName }}
+                  </el-tag>
+                </div>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
         </el-card>
       </el-col>
       
       <el-col :span="12">
-        <el-card>
+        <el-card class="chart-card">
           <template #header>
             <span>长势对比快览</span>
           </template>
-          <div ref="growthChartRef" style="height: 300px"></div>
+          <div ref="growthChartRef" class="chart-container-sm"></div>
         </el-card>
       </el-col>
     </el-row>
@@ -269,7 +271,7 @@ const initGrowthChart = () => {
 
 .stat-card {
   position: relative;
-  min-height: 132px;
+  height: 132px;
   border-radius: 26px;
   padding: 24px;
   display: flex;
@@ -308,6 +310,7 @@ const initGrowthChart = () => {
   color: #fff;
   font-size: 32px;
   box-shadow: 0 18px 36px rgba(30, 64, 175, 0.16);
+  flex-shrink: 0;
 }
 
 .stat-content {
@@ -328,6 +331,23 @@ const initGrowthChart = () => {
   color: #64748b;
   margin-top: 7px;
   font-weight: 800;
+  white-space: nowrap;
+}
+
+.chart-card {
+  height: 100%;
+}
+
+.chart-card :deep(.el-card__body) {
+  padding: 16px 20px;
+}
+
+.chart-container {
+  height: 350px;
+}
+
+.chart-container-sm {
+  height: 300px;
 }
 
 .card-header {
@@ -339,7 +359,7 @@ const initGrowthChart = () => {
 }
 
 .todo-list {
-  max-height: 350px;
+  height: 350px;
   overflow-y: auto;
 }
 
@@ -374,5 +394,31 @@ const initGrowthChart = () => {
   font-size: 14px;
   color: #334155;
   font-weight: 800;
+}
+
+.warning-list {
+  height: 300px;
+  overflow-y: auto;
+}
+
+.warning-item {
+  padding: 12px 16px;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid rgba(59, 130, 246, 0.08);
+}
+
+.warning-item h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.warning-item p {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.5;
 }
 </style>
