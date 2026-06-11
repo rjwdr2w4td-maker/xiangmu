@@ -132,6 +132,42 @@ const routes = [
     name: 'MobileHome',
     component: () => import('@/views/mobile/MobileHome.vue'),
     meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/task/:entry',
+    name: 'MobileTaskList',
+    component: () => import('@/views/mobile/MobileTaskList.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/map/:entry',
+    name: 'MobileMap',
+    component: () => import('@/views/mobile/MobileMap.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/profile/:entry',
+    name: 'MobileProfile',
+    component: () => import('@/views/mobile/MobileProfile.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/audit/:entry/:id',
+    name: 'MobileAuditDetail',
+    component: () => import('@/views/mobile/MobileAuditDetail.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/report/:entry/:id',
+    name: 'MobileProgressReport',
+    component: () => import('@/views/mobile/MobileProgressReport.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/check/:entry/:id',
+    name: 'MobilePhotoCheck',
+    component: () => import('@/views/mobile/MobilePhotoCheck.vue'),
+    meta: { requiresAuth: true, isMobile: true }
   }
 ]
 
