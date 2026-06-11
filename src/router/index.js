@@ -168,6 +168,42 @@ const routes = [
     name: 'MobilePhotoCheck',
     component: () => import('@/views/mobile/MobilePhotoCheck.vue'),
     meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/notice/:entry',
+    name: 'MobileNotice',
+    component: () => import('@/views/mobile/MobileNotice.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/stats/:entry',
+    name: 'MobileStats',
+    component: () => import('@/views/mobile/MobileStats.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/pesticide/:entry',
+    name: 'MobilePesticideQuery',
+    component: () => import('@/views/mobile/MobilePesticideQuery.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/subsidy/:entry',
+    name: 'MobileSubsidy',
+    component: () => import('@/views/mobile/MobileSubsidy.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/silage/:entry',
+    name: 'MobileSilageApply',
+    component: () => import('@/views/mobile/MobileSilageApply.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/issue/:entry',
+    name: 'MobileIssueReport',
+    component: () => import('@/views/mobile/MobileIssueReport.vue'),
+    meta: { requiresAuth: true, isMobile: true }
   }
 ]
 

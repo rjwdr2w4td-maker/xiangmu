@@ -175,15 +175,15 @@ const modules = computed(() => {
       { id: 2, name: '拍照记录', icon: 'Picture', color: '#10b981', route: 'MobileTaskList' },
       { id: 3, name: '轨迹记录', icon: 'MapLocation', color: '#f59e0b', route: 'MobileMap' },
       { id: 4, name: '数据同步', icon: 'Refresh', color: '#8b5cf6', route: null },
-      { id: 5, name: '问题上报', icon: 'ChatDotSquare', color: '#ef4444', route: null },
+      { id: 5, name: '问题上报', icon: 'ChatDotSquare', color: '#ef4444', route: 'MobileIssueReport' },
       { id: 6, name: '帮助中心', icon: 'QuestionFilled', color: '#6b7280', route: null }
     ]
   } else if (entryType.value === 'wanqitong') {
     return [
       { id: 1, name: '种植计划', icon: 'Document', color: '#3b82f6', route: 'MobileTaskList' },
-      { id: 2, name: '青贮管理', icon: 'Crop', color: '#10b981', route: 'MobileTaskList' },
-      { id: 3, name: '农药台账', icon: 'FirstAidKit', color: '#f59e0b', route: null },
-      { id: 4, name: '补贴申请', icon: 'Wallet', color: '#8b5cf6', route: null },
+      { id: 2, name: '青贮管理', icon: 'Crop', color: '#10b981', route: 'MobileSilageApply' },
+      { id: 3, name: '农药台账', icon: 'FirstAidKit', color: '#f59e0b', route: 'MobilePesticideQuery' },
+      { id: 4, name: '补贴申请', icon: 'Wallet', color: '#8b5cf6', route: 'MobileSubsidy' },
       { id: 5, name: '合同管理', icon: 'Tickets', color: '#ef4444', route: null },
       { id: 6, name: '更多服务', icon: 'More', color: '#6b7280', route: null }
     ]
@@ -193,7 +193,7 @@ const modules = computed(() => {
     { id: 2, name: '安全监管', icon: 'Warning', color: '#ef4444', route: 'MobileTaskList' },
     { id: 3, name: '青贮审核', icon: 'Crop', color: '#10b981', route: 'MobileTaskList' },
     { id: 4, name: '农药监管', icon: 'FirstAidKit', color: '#f59e0b', route: null },
-    { id: 5, name: '数据分析', icon: 'DataAnalysis', color: '#8b5cf6', route: null },
+    { id: 5, name: '数据分析', icon: 'DataAnalysis', color: '#8b5cf6', route: 'MobileStats' },
     { id: 6, name: '更多功能', icon: 'More', color: '#6b7280', route: null }
   ]
 })
@@ -220,20 +220,42 @@ const pendingTasks = computed(() => {
 })
 
 const handleAction = (action) => {
-  if (action.action === 'audit' || action.action === 'event') {
-    router.push({ name: 'MobileTaskList', params: { entry: entryType.value } })
-  } else if (action.action === 'report') {
-    router.push({ name: 'MobileProgressReport', params: { entry: entryType.value, id: 'TASK003' } })
-  } else if (action.action === 'photo') {
-    router.push({ name: 'MobilePhotoCheck', params: { entry: entryType.value, id: 'TASK002' } })
+  const routes = {
+    audit: { name: 'MobileTaskList' },
+    event: { name: 'MobileTaskList' },
+    stats: { name: 'MobileStats' },
+    notice: { name: 'MobileNotice' },
+    report: { name: 'MobileProgressReport', params: { id: 'TASK003' } },
+    silage: { name: 'MobileSilageApply' },
+    pesticide: { name: 'MobilePesticideQuery' },
+    photo: { name: 'MobilePhotoCheck', params: { id: 'TASK002' } },
+    issue: { name: 'MobileIssueReport' }
+  }
+  const routeConfig = routes[action.action]
+  if (routeConfig) {
+    router.push({
+      name: routeConfig.name,
+      params: { entry: entryType.value, ...routeConfig.params }
+    })
   } else {
     ElMessage.info(`${action.name}功能开发中`)
   }
 }
 
 const handleModule = (mod) => {
-  if (mod.route) {
-    router.push({ name: mod.route, params: { entry: entryType.value } })
+  const moduleRoutes = {
+    MobileTaskList: 'MobileTaskList',
+    MobileMap: 'MobileMap',
+    MobileStats: 'MobileStats',
+    MobileNotice: 'MobileNotice',
+    MobilePesticideQuery: 'MobilePesticideQuery',
+    MobileSubsidy: 'MobileSubsidy',
+    MobileSilageApply: 'MobileSilageApply',
+    MobileIssueReport: 'MobileIssueReport'
+  }
+  const routeName = moduleRoutes[mod.route]
+  if (routeName) {
+    router.push({ name: routeName, params: { entry: entryType.value } })
   } else {
     ElMessage.info(`${mod.name}功能开发中`)
   }
