@@ -105,10 +105,11 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const router = useRouter()
+const route = useRoute()
 
 const form = reactive({
   problemType: '',
@@ -196,7 +197,7 @@ const handleSubmit = () => {
       phone: form.phone,
       status: 'pending',
       reportTime: new Date().toLocaleString('zh-CN', { hour12: false }),
-      source: 'wanqitong'
+      source: route.params.entry || 'wanzhengtong'
     }
     const records = JSON.parse(localStorage.getItem('mobilePhotoReports') || '[]')
     records.unshift(record)
