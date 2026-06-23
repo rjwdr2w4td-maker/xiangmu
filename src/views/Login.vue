@@ -1,6 +1,7 @@
 <template>
   <div class="login-page">
     <div class="left-scene">
+      <div class="scene-layer"></div>
       <div class="scene-content">
         <h2 class="scene-title">粮食安全 · 数字监管</h2>
         <p class="scene-subtitle">Grain Security Digital Supervision Platform</p>
@@ -213,6 +214,13 @@ const getUserRole = () => {
   position: relative;
   overflow: hidden;
   background: #001529;
+}
+
+.scene-layer {
+  position: absolute;
+  inset: 0;
+  background: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&q=80') center / cover no-repeat;
+  opacity: 0.35;
 }
 
 .scene-content {
