@@ -80,9 +80,9 @@
 
       <el-divider />
 
-      <el-table :data="filteredPlots" border style="width: 100%">
-        <el-table-column prop="plotNo" label="图斑编号" width="150" />
-        <el-table-column label="位置" width="200">
+      <el-table :data="paginatedPlots" border>
+        <el-table-column prop="plotNo" label="图斑编号" min-width="150" />
+        <el-table-column label="位置" min-width="200">
           <template #default="{ row }">
             <div>{{ row.location.city }} {{ row.location.county }}</div>
             <div style="font-size: 12px; color: #666">
@@ -90,30 +90,30 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="problemTypeName" label="问题类型" width="150">
+        <el-table-column prop="problemTypeName" label="问题类型" min-width="120">
           <template #default="{ row }">
             <el-tag :type="getProblemTypeTag(row.problemType)">
               {{ row.problemTypeName }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="area" label="面积(亩)" width="100" sortable />
-        <el-table-column prop="riskLevel" label="风险等级" width="100">
+        <el-table-column prop="area" label="面积(亩)" min-width="100" sortable />
+        <el-table-column prop="riskLevel" label="风险等级" min-width="100">
           <template #default="{ row }">
             <el-tag :type="getRiskTag(row.riskLevel)">
               {{ getRiskName(row.riskLevel) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="discoveryTime" label="发现时间" width="160" />
-        <el-table-column prop="statusName" label="状态" width="100">
+        <el-table-column prop="discoveryTime" label="发现时间" min-width="160" />
+        <el-table-column prop="statusName" label="状态" min-width="100">
           <template #default="{ row }">
             <el-tag :type="getStatusTag(row.status)">
               {{ row.statusName }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="280" fixed="right">
+        <el-table-column label="操作" min-width="280">
           <template #default="{ row }">
             <el-button size="small" @click="handleViewPlot(row)">查看详情</el-button>
             <el-button
@@ -336,6 +336,12 @@ const filteredPlots = computed(() => {
   }
   
   return result
+})
+
+const paginatedPlots = computed(() => {
+  const start = (pagination.currentPage - 1) * pagination.pageSize
+  const end = start + pagination.pageSize
+  return filteredPlots.value.slice(start, end)
 })
 
 const getProblemTypeTag = (type) => {

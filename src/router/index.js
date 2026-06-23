@@ -56,6 +56,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/grain-plan/warning',
+    name: 'GrainWarning',
+    component: () => import('@/views/grain-plan/WeatherWarning.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/grain-security/discovery',
     name: 'SecurityDiscovery',
     component: () => import('@/views/grain-security/EventDiscovery.vue'),
@@ -200,9 +206,33 @@ const routes = [
     meta: { requiresAuth: true, isMobile: true }
   },
   {
+    path: '/mobile/planting/:entry',
+    name: 'MobilePlantingRecord',
+    component: () => import('@/views/mobile/MobilePlantingRecord.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/storage/:entry',
+    name: 'MobileStorageDeclare',
+    component: () => import('@/views/mobile/MobileStorageDeclare.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/photo-report/:entry',
+    name: 'MobilePhotoReport',
+    component: () => import('@/views/mobile/MobilePhotoReport.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
     path: '/mobile/issue/:entry',
     name: 'MobileIssueReport',
     component: () => import('@/views/mobile/MobileIssueReport.vue'),
+    meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/advice/:entry',
+    name: 'MobileFarmingAdvice',
+    component: () => import('@/views/mobile/MobileFarmingAdvice.vue'),
     meta: { requiresAuth: true, isMobile: true }
   }
 ]

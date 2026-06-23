@@ -294,7 +294,7 @@ const handleDetail = (item) => {
 }
 
 .page-header {
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  background: #1a3a5c;
   padding: 16px 20px;
   display: flex;
   align-items: center;
@@ -341,10 +341,9 @@ const handleDetail = (item) => {
 
 .pesticide-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
 }
 

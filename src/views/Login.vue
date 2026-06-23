@@ -1,7 +1,6 @@
 <template>
   <div class="login-page">
     <div class="left-scene">
-      <div class="scene-layer"></div>
       <div class="scene-content">
         <h2 class="scene-title">粮食安全 · 数字监管</h2>
         <p class="scene-subtitle">Grain Security Digital Supervision Platform</p>
@@ -20,7 +19,7 @@
           </div>
         </div>
         <div class="scene-tags">
-          <span>AI遥感识别</span>
+          <span>遥感识别</span>
           <span>全程追溯</span>
           <span>移动闭环</span>
         </div>
@@ -206,22 +205,14 @@ const getUserRole = () => {
   height: 100vh;
   display: flex;
   overflow: hidden;
-  background: #0b1120;
+  background: #f0f2f5;
 }
 
 .left-scene {
   flex: 1.28;
   position: relative;
   overflow: hidden;
-}
-
-.scene-layer {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 28% 28%, rgba(255, 255, 255, 0.08), transparent 28%),
-    linear-gradient(145deg, rgba(15, 23, 42, 0.48), rgba(30, 58, 138, 0.32) 46%, rgba(15, 23, 42, 0.56)),
-    url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1600&q=80') center/cover;
+  background: #001529;
 }
 
 .scene-content {
@@ -235,14 +226,14 @@ const getUserRole = () => {
 .scene-title {
   font-size: 42px;
   margin: 0 0 12px 0;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.08em;
 }
 
 .scene-subtitle {
   font-size: 14px;
   margin: 0 0 32px 0;
-  color: rgba(191, 219, 254, 0.78);
+  color: rgba(255, 255, 255, 0.65);
   letter-spacing: 0.2em;
 }
 
@@ -259,15 +250,15 @@ const getUserRole = () => {
 
 .metric-value {
   font-size: 36px;
-  font-weight: 900;
-  color: #fed7aa;
+  font-weight: 600;
+  color: #e6a23c;
   line-height: 1;
 }
 
 .metric-label {
   font-size: 12px;
   margin-top: 6px;
-  color: rgba(191, 219, 254, 0.72);
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .scene-tags {
@@ -277,15 +268,15 @@ const getUserRole = () => {
 
 .scene-tags span {
   padding: 5px 14px;
-  border-radius: 999px;
-  background: rgba(56, 189, 248, 0.16);
-  color: #bfdbfe;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.85);
   font-size: 12px;
 }
 
 .right-panel {
   width: 520px;
-  background: #f8fafc;
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -306,27 +297,27 @@ const getUserRole = () => {
   width: 64px;
   height: 64px;
   margin: 0 auto 16px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #1e3a8a, #2563eb);
-  color: #fed7aa;
+  border-radius: 4px;
+  background: #1a3a5c;
+  color: #e6a23c;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 16px 32px rgba(30, 64, 175, 0.28);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .system-title h1 {
   font-size: 22px;
   margin: 0 0 6px 0;
-  color: #172554;
-  font-weight: 900;
+  color: #303133;
+  font-weight: 600;
   letter-spacing: 0.03em;
 }
 
 .system-title p {
   font-size: 11px;
   margin: 0;
-  color: #64748b;
+  color: #909399;
   letter-spacing: 0.12em;
 }
 
@@ -340,7 +331,7 @@ const getUserRole = () => {
   flex-wrap: wrap;
   margin-bottom: 16px;
   font-size: 13px;
-  color: #64748b;
+  color: #909399;
 }
 
 .mobile-bar {
@@ -349,8 +340,8 @@ const getUserRole = () => {
   justify-content: center;
   gap: 8px;
   font-size: 12px;
-  color: #94a3b8;
+  color: #c0c4cc;
   padding-top: 14px;
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid #e4e7ed;
 }
 </style>

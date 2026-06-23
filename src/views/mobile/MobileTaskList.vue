@@ -247,7 +247,7 @@ const handleReject = (task) => {
 }
 
 .page-header {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: #1a3a5c;
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -287,7 +287,7 @@ const handleReject = (task) => {
   gap: 6px;
   padding: 8px 16px;
   cursor: pointer;
-  border-radius: 20px;
+  border-radius: 4px;
   white-space: nowrap;
 }
 
@@ -300,10 +300,9 @@ const handleReject = (task) => {
 
 .task-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
+  }
 
 .task-header {
   display: flex;

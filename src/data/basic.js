@@ -17,7 +17,9 @@ export const administrativeDivisions = [
           { code: '340111', name: '包河区', level: 'county', parentCode: '340100' },
           { code: '340121', name: '长丰县', level: 'county', parentCode: '340100' },
           { code: '340122', name: '肥东县', level: 'county', parentCode: '340100' },
-          { code: '340123', name: '肥西县', level: 'county', parentCode: '340100' }
+          { code: '340123', name: '肥西县', level: 'county', parentCode: '340100' },
+          { code: '340124', name: '庐江县', level: 'county', parentCode: '340100' },
+          { code: '340181', name: '巢湖市', level: 'county', parentCode: '340100' }
         ]
       },
       {
@@ -30,7 +32,8 @@ export const administrativeDivisions = [
           { code: '340203', name: '弋江区', level: 'county', parentCode: '340200' },
           { code: '340207', name: '鸠江区', level: 'county', parentCode: '340200' },
           { code: '340222', name: '繁昌区', level: 'county', parentCode: '340200' },
-          { code: '340223', name: '南陵县', level: 'county', parentCode: '340200' }
+          { code: '340223', name: '南陵县', level: 'county', parentCode: '340200' },
+          { code: '340225', name: '无为市', level: 'county', parentCode: '340200' }
         ]
       },
       {
@@ -59,7 +62,8 @@ export const administrativeDivisions = [
           { code: '340404', name: '谢家集区', level: 'county', parentCode: '340400' },
           { code: '340405', name: '八公山区', level: 'county', parentCode: '340400' },
           { code: '340406', name: '潘集区', level: 'county', parentCode: '340400' },
-          { code: '340421', name: '凤台县', level: 'county', parentCode: '340400' }
+          { code: '340421', name: '凤台县', level: 'county', parentCode: '340400' },
+          { code: '340422', name: '寿县', level: 'county', parentCode: '340400' }
         ]
       },
       {
@@ -116,6 +120,120 @@ export const administrativeDivisions = [
           { code: '340828', name: '岳西县', level: 'county', parentCode: '340800' },
           { code: '340881', name: '桐城市', level: 'county', parentCode: '340800' },
           { code: '340882', name: '潜山市', level: 'county', parentCode: '340800' }
+        ]
+      },
+      {
+        code: '341000',
+        name: '黄山市',
+        level: 'city',
+        parentCode: '340000',
+        children: [
+          { code: '341002', name: '屯溪区', level: 'county', parentCode: '341000' },
+          { code: '341003', name: '黄山区', level: 'county', parentCode: '341000' },
+          { code: '341004', name: '徽州区', level: 'county', parentCode: '341000' },
+          { code: '341021', name: '歙县', level: 'county', parentCode: '341000' },
+          { code: '341022', name: '休宁县', level: 'county', parentCode: '341000' },
+          { code: '341023', name: '黟县', level: 'county', parentCode: '341000' },
+          { code: '341024', name: '祁门县', level: 'county', parentCode: '341000' }
+        ]
+      },
+      {
+        code: '341100',
+        name: '滁州市',
+        level: 'city',
+        parentCode: '340000',
+        children: [
+          { code: '341102', name: '琅琊区', level: 'county', parentCode: '341100' },
+          { code: '341103', name: '南谯区', level: 'county', parentCode: '341100' },
+          { code: '341122', name: '来安县', level: 'county', parentCode: '341100' },
+          { code: '341124', name: '全椒县', level: 'county', parentCode: '341100' },
+          { code: '341125', name: '定远县', level: 'county', parentCode: '341100' },
+          { code: '341126', name: '凤阳县', level: 'county', parentCode: '341100' },
+          { code: '341181', name: '天长市', level: 'county', parentCode: '341100' },
+          { code: '341182', name: '明光市', level: 'county', parentCode: '341100' }
+        ]
+      },
+      {
+        code: '341200',
+        name: '阜阳市',
+        level: 'city',
+        parentCode: '340000',
+        children: [
+          { code: '341202', name: '颍州区', level: 'county', parentCode: '341200' },
+          { code: '341203', name: '颍东区', level: 'county', parentCode: '341200' },
+          { code: '341204', name: '颍泉区', level: 'county', parentCode: '341200' },
+          { code: '341221', name: '临泉县', level: 'county', parentCode: '341200' },
+          { code: '341222', name: '太和县', level: 'county', parentCode: '341200' },
+          { code: '341225', name: '阜南县', level: 'county', parentCode: '341200' },
+          { code: '341226', name: '颍上县', level: 'county', parentCode: '341200' },
+          { code: '341282', name: '界首市', level: 'county', parentCode: '341200' }
+        ]
+      },
+      {
+        code: '341300',
+        name: '宿州市',
+        level: 'city',
+        parentCode: '340000',
+        children: [
+          { code: '341302', name: '埇桥区', level: 'county', parentCode: '341300' },
+          { code: '341321', name: '砀山县', level: 'county', parentCode: '341300' },
+          { code: '341322', name: '萧县', level: 'county', parentCode: '341300' },
+          { code: '341323', name: '灵璧县', level: 'county', parentCode: '341300' },
+          { code: '341324', name: '泗县', level: 'county', parentCode: '341300' }
+        ]
+      },
+      {
+        code: '341500',
+        name: '六安市',
+        level: 'city',
+        parentCode: '340000',
+        children: [
+          { code: '341502', name: '金安区', level: 'county', parentCode: '341500' },
+          { code: '341503', name: '裕安区', level: 'county', parentCode: '341500' },
+          { code: '341504', name: '叶集区', level: 'county', parentCode: '341500' },
+          { code: '341522', name: '霍邱县', level: 'county', parentCode: '341500' },
+          { code: '341523', name: '舒城县', level: 'county', parentCode: '341500' },
+          { code: '341524', name: '金寨县', level: 'county', parentCode: '341500' },
+          { code: '341525', name: '霍山县', level: 'county', parentCode: '341500' }
+        ]
+      },
+      {
+        code: '341600',
+        name: '亳州市',
+        level: 'city',
+        parentCode: '340000',
+        children: [
+          { code: '341602', name: '谯城区', level: 'county', parentCode: '341600' },
+          { code: '341621', name: '涡阳县', level: 'county', parentCode: '341600' },
+          { code: '341622', name: '蒙城县', level: 'county', parentCode: '341600' },
+          { code: '341623', name: '利辛县', level: 'county', parentCode: '341600' }
+        ]
+      },
+      {
+        code: '341700',
+        name: '池州市',
+        level: 'city',
+        parentCode: '340000',
+        children: [
+          { code: '341702', name: '贵池区', level: 'county', parentCode: '341700' },
+          { code: '341721', name: '东至县', level: 'county', parentCode: '341700' },
+          { code: '341722', name: '石台县', level: 'county', parentCode: '341700' },
+          { code: '341723', name: '青阳县', level: 'county', parentCode: '341700' }
+        ]
+      },
+      {
+        code: '341800',
+        name: '宣城市',
+        level: 'city',
+        parentCode: '340000',
+        children: [
+          { code: '341802', name: '宣州区', level: 'county', parentCode: '341800' },
+          { code: '341821', name: '郎溪县', level: 'county', parentCode: '341800' },
+          { code: '341823', name: '泾县', level: 'county', parentCode: '341800' },
+          { code: '341824', name: '绩溪县', level: 'county', parentCode: '341800' },
+          { code: '341825', name: '旌德县', level: 'county', parentCode: '341800' },
+          { code: '341881', name: '宁国市', level: 'county', parentCode: '341800' },
+          { code: '341882', name: '广德市', level: 'county', parentCode: '341800' }
         ]
       }
     ]

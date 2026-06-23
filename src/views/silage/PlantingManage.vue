@@ -115,7 +115,18 @@ import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { silagePlantingRecords } from '@/data/silage'
 
-const records = ref(silagePlantingRecords.map(item => ({ ...item })))
+function loadMobilePlantingRecords() {
+  try {
+    return JSON.parse(localStorage.getItem('mobilePlantingRecords') || '[]')
+  } catch (error) {
+    return []
+  }
+}
+
+const records = ref([
+  ...loadMobilePlantingRecords(),
+  ...silagePlantingRecords.map(item => ({ ...item }))
+])
 const detailVisible = ref(false)
 const formVisible = ref(false)
 const locateVisible = ref(false)

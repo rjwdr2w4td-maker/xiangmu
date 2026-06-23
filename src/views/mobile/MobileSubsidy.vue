@@ -271,7 +271,7 @@ const handleSubmit = () => {
 }
 
 .page-header {
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  background: #1a3a5c;
   padding: 16px 20px;
   display: flex;
   align-items: center;
@@ -310,7 +310,7 @@ const handleSubmit = () => {
 
 .form-section {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -334,7 +334,7 @@ const handleSubmit = () => {
   align-items: center;
   padding: 16px 8px;
   border: 2px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -347,7 +347,7 @@ const handleSubmit = () => {
 .type-icon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -403,7 +403,7 @@ const handleSubmit = () => {
 
 .calc-result {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -438,7 +438,7 @@ const handleSubmit = () => {
 
 .submit-bar {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
 }
 
@@ -450,7 +450,7 @@ const handleSubmit = () => {
 
 .record-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
 }
 

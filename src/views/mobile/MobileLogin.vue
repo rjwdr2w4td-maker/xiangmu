@@ -172,7 +172,7 @@ const getUserRole = () => {
 <style scoped>
 .mobile-login {
   min-height: 100vh;
-  background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+  background: #1a3a5c;
   padding: 40px 24px;
   display: flex;
   flex-direction: column;
@@ -213,21 +213,21 @@ const getUserRole = () => {
 
 .login-form {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 4px;
   padding: 32px 24px;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.15);
 }
 
 .login-form :deep(.el-input__wrapper) {
-  border-radius: 12px;
+  border-radius: 4px;
 }
 
 .login-form :deep(.el-select .el-input__wrapper) {
-  border-radius: 12px;
+  border-radius: 4px;
 }
 
 .login-form :deep(.el-button--primary) {
-  border-radius: 12px;
+  border-radius: 4px;
   font-size: 16px;
   font-weight: 600;
   height: 48px;
@@ -253,7 +253,7 @@ const getUserRole = () => {
 
 .quick-tags .el-tag {
   cursor: pointer;
-  border-radius: 20px;
+  border-radius: 4px;
   padding: 6px 14px;
 }
 

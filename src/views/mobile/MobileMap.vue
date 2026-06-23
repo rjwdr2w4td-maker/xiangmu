@@ -7,17 +7,7 @@
     </div>
 
     <div class="map-container">
-      <div class="map-placeholder">
-        <div class="map-bg">
-          <div class="map-region" v-for="region in mapRegions" :key="region.name"
-            :style="{ left: region.x + '%', top: region.y + '%' }"
-            @click="handleRegionClick(region)"
-          >
-            <div class="region-dot" :style="{ background: region.color }"></div>
-            <span class="region-label">{{ region.name }}</span>
-          </div>
-        </div>
-      </div>
+      <div id="mobileLeafletMap" class="leaflet-map"></div>
     </div>
 
     <div class="map-stats">
@@ -63,7 +53,7 @@
           <el-checkbox label="security">安全监管</el-checkbox>
           <el-checkbox label="silage">青贮种植</el-checkbox>
           <el-checkbox label="pesticide">农药监管</el-checkbox>
-          <el-checkbox label="disaster">灾害预警</el-checkbox>
+          <el-checkbox label="disaster">灾情上报</el-checkbox>
         </el-checkbox-group>
         <el-button type="primary" size="small" @click="showLayer = false" style="margin-top: 12px; width: 100%">
           确定
@@ -74,9 +64,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 
 const router = useRouter()
 const route = useRoute()
@@ -84,16 +76,17 @@ const route = useRoute()
 const entryType = computed(() => route.params.entry || 'wanzhengtong')
 const showLayer = ref(false)
 const selectedLayers = ref(['planting', 'security'])
+let mapInstance = null
 
 const mapRegions = ref([
-  { name: '合肥', x: 50, y: 45, color: '#3b82f6' },
-  { name: '芜湖', x: 62, y: 58, color: '#10b981' },
-  { name: '蚌埠', x: 68, y: 35, color: '#f59e0b' },
-  { name: '淮南', x: 42, y: 30, color: '#8b5cf6' },
-  { name: '马鞍山', x: 60, y: 52, color: '#ef4444' },
-  { name: '安庆', x: 30, y: 65, color: '#06b6d4' },
-  { name: '黄山', x: 48, y: 75, color: '#84cc16' },
-  { name: '阜阳', x: 25, y: 25, color: '#f97316' }
+  { name: '合肥', lng: 117.2272, lat: 31.8206, color: '#3b82f6' },
+  { name: '芜湖', lng: 118.4331, lat: 31.3525, color: '#10b981' },
+  { name: '蚌埠', lng: 117.3885, lat: 32.9168, color: '#f59e0b' },
+  { name: '淮南', lng: 117.0186, lat: 32.6476, color: '#1a3a5c' },
+  { name: '马鞍山', lng: 118.5079, lat: 31.6894, color: '#ef4444' },
+  { name: '安庆', lng: 117.0637, lat: 30.5435, color: '#06b6d4' },
+  { name: '黄山', lng: 118.3173, lat: 29.7092, color: '#84cc16' },
+  { name: '阜阳', lng: 115.8142, lat: 32.8901, color: '#f97316' }
 ])
 
 const mapStats = computed(() => {
@@ -109,7 +102,7 @@ const mapStats = computed(() => {
       { label: '种植面积', value: '58.6', color: '#3b82f6' },
       { label: '青贮面积', value: '12.3', color: '#10b981' },
       { label: '农药批次', value: 156, color: '#f59e0b' },
-      { label: '预警数', value: 3, color: '#ef4444' }
+      { label: '灾情数', value: 3, color: '#ef4444' }
     ]
   }
   return [
@@ -124,20 +117,41 @@ const regionList = ref([
   { name: '合肥市', color: '#3b82f6', status: '正常', alertLevel: 'success', planArea: 35, actualArea: 34.2, progress: 97 },
   { name: '芜湖市', color: '#10b981', status: '正常', alertLevel: 'success', planArea: 28, actualArea: 27.5, progress: 98 },
   { name: '蚌埠市', color: '#f59e0b', status: '关注', alertLevel: 'warning', planArea: 42, actualArea: 40.8, progress: 97 },
-  { name: '淮南市', color: '#8b5cf6', status: '正常', alertLevel: 'success', planArea: 31, actualArea: 30, progress: 96 },
-  { name: '马鞍山市', color: '#ef4444', status: '预警', alertLevel: 'danger', planArea: 22, actualArea: 21.5, progress: 97 }
+  { name: '淮南市', color: '#1a3a5c', status: '正常', alertLevel: 'success', planArea: 31, actualArea: 30, progress: 96 },
+  { name: '马鞍山市', color: '#ef4444', status: '灾情', alertLevel: 'danger', planArea: 22, actualArea: 21.5, progress: 97 }
 ])
+
+const initMap = async () => {
+  await nextTick()
+  if (mapInstance) return
+  mapInstance = L.map('mobileLeafletMap', {
+    zoomControl: false,
+    attributionControl: false
+  }).setView([31.8257, 117.2264], 7)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18
+  }).addTo(mapInstance)
+  L.control.zoom({ position: 'bottomright' }).addTo(mapInstance)
+  mapRegions.value.forEach(region => {
+    L.circleMarker([region.lat, region.lng], {
+      radius: 8,
+      color: '#fff',
+      weight: 2,
+      fillColor: region.color,
+      fillOpacity: 0.9
+    }).addTo(mapInstance).bindPopup(`${region.name}区域概览`)
+  })
+  setTimeout(() => mapInstance.invalidateSize(), 200)
+}
 
 const goBack = () => router.back()
 const toggleLayer = () => { showLayer.value = !showLayer.value }
 
-const handleRegionClick = (region) => {
-  ElMessage.info(`${region.name}区域详情`)
-}
-
 const handleRegionDetail = (region) => {
   ElMessage.info(`${region.name}详情查看`)
 }
+
+onMounted(initMap)
 </script>
 
 <style scoped>
@@ -147,7 +161,7 @@ const handleRegionDetail = (region) => {
 }
 
 .page-header {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: #1a3a5c;
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -171,54 +185,15 @@ const handleRegionDetail = (region) => {
 
 .map-container {
   width: 100%;
-  height: 280px;
-  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+  height: 320px;
+  background: #dbeafe;
   position: relative;
 }
 
-.map-placeholder {
+.leaflet-map {
   width: 100%;
   height: 100%;
-  position: relative;
-}
-
-.map-bg {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  background:
-    radial-gradient(ellipse at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-}
-
-.map-region {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  transform: translate(-50%, -50%);
-}
-
-.region-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
-}
-
-.region-label {
-  font-size: 11px;
-  color: #374151;
-  font-weight: 500;
-  white-space: nowrap;
+  z-index: 1;
 }
 
 .map-stats {
@@ -259,7 +234,7 @@ const handleRegionDetail = (region) => {
 
 .region-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -328,7 +303,7 @@ const handleRegionDetail = (region) => {
   left: 0;
   right: 0;
   background: #fff;
-  border-radius: 16px 16px 0 0;
+  border-radius: 4px 4px 0 0;
   padding: 24px;
 }
 

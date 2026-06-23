@@ -147,24 +147,24 @@ const statsData = computed(() => {
 const quickActions = computed(() => {
   if (entryType.value === 'field-check') {
     return [
-      { id: 1, name: '现场拍照', icon: 'Camera', color: 'linear-gradient(135deg, #3b82f6, #60a5fa)', badge: null, action: 'photo' },
-      { id: 2, name: 'GPS打卡', icon: 'Location', color: 'linear-gradient(135deg, #10b981, #34d399)', badge: null, action: 'gps' },
-      { id: 3, name: '离线数据', icon: 'FolderOpened', color: 'linear-gradient(135deg, #f59e0b, #fbbf24)', badge: '3', action: 'offline' },
-      { id: 4, name: '扫码核查', icon: 'Scan', color: 'linear-gradient(135deg, #8b5cf6, #a78bfa)', badge: null, action: 'scan' }
+      { id: 1, name: '现场拍照', icon: 'Camera', color: '#3b82f6', badge: null, action: 'photo' },
+      { id: 2, name: 'GPS打卡', icon: 'Location', color: '#10b981', badge: null, action: 'gps' },
+      { id: 3, name: '离线数据', icon: 'FolderOpened', color: '#f59e0b', badge: '3', action: 'offline' },
+      { id: 4, name: '扫码核查', icon: 'Scan', color: '#1a3a5c', badge: null, action: 'scan' }
     ]
   } else if (entryType.value === 'wanqitong') {
     return [
-      { id: 1, name: '进度填报', icon: 'Edit', color: 'linear-gradient(135deg, #3b82f6, #60a5fa)', badge: null, action: 'report' },
-      { id: 2, name: '青贮申报', icon: 'DocumentAdd', color: 'linear-gradient(135deg, #10b981, #34d399)', badge: null, action: 'silage' },
-      { id: 3, name: '农药查询', icon: 'Search', color: 'linear-gradient(135deg, #f59e0b, #fbbf24)', badge: null, action: 'pesticide' },
-      { id: 4, name: '政策公告', icon: 'Bell', color: 'linear-gradient(135deg, #8b5cf6, #a78bfa)', badge: '5', action: 'notice' }
+      { id: 1, name: '进度填报', icon: 'Edit', color: '#3b82f6', badge: null, action: 'report' },
+      { id: 2, name: '青贮申报', icon: 'DocumentAdd', color: '#10b981', badge: null, action: 'silage' },
+      { id: 3, name: '农药查询', icon: 'Search', color: '#f59e0b', badge: null, action: 'pesticide' },
+      { id: 4, name: '政策公告', icon: 'Bell', color: '#1a3a5c', badge: '5', action: 'notice' }
     ]
   }
   return [
-    { id: 1, name: '待审核', icon: 'DocumentChecked', color: 'linear-gradient(135deg, #3b82f6, #60a5fa)', badge: '12', action: 'audit' },
-    { id: 2, name: '事件处置', icon: 'Warning', color: 'linear-gradient(135deg, #ef4444, #f87171)', badge: '3', action: 'event' },
-    { id: 3, name: '统计报表', icon: 'DataAnalysis', color: 'linear-gradient(135deg, #10b981, #34d399)', badge: null, action: 'stats' },
-    { id: 4, name: '通知公告', icon: 'Bell', color: 'linear-gradient(135deg, #f59e0b, #fbbf24)', badge: '8', action: 'notice' }
+    { id: 1, name: '待审核', icon: 'DocumentChecked', color: '#3b82f6', badge: '12', action: 'audit' },
+    { id: 2, name: '事件处置', icon: 'Warning', color: '#ef4444', badge: '3', action: 'event' },
+    { id: 3, name: '统计报表', icon: 'DataAnalysis', color: '#10b981', badge: null, action: 'stats' },
+    { id: 4, name: '通知公告', icon: 'Bell', color: '#f59e0b', badge: '8', action: 'notice' }
   ]
 })
 
@@ -174,18 +174,19 @@ const modules = computed(() => {
       { id: 1, name: '核查任务', icon: 'Document', color: '#3b82f6', route: 'MobileTaskList' },
       { id: 2, name: '拍照记录', icon: 'Picture', color: '#10b981', route: 'MobileTaskList' },
       { id: 3, name: '轨迹记录', icon: 'MapLocation', color: '#f59e0b', route: 'MobileMap' },
-      { id: 4, name: '数据同步', icon: 'Refresh', color: '#8b5cf6', route: null },
+      { id: 4, name: '数据同步', icon: 'Refresh', color: '#1a3a5c', route: null },
       { id: 5, name: '问题上报', icon: 'ChatDotSquare', color: '#ef4444', route: 'MobileIssueReport' },
       { id: 6, name: '帮助中心', icon: 'QuestionFilled', color: '#6b7280', route: null }
     ]
   } else if (entryType.value === 'wanqitong') {
     return [
       { id: 1, name: '种植计划', icon: 'Document', color: '#3b82f6', route: 'MobileTaskList' },
-      { id: 2, name: '青贮管理', icon: 'Crop', color: '#10b981', route: 'MobileSilageApply' },
-      { id: 3, name: '农药台账', icon: 'FirstAidKit', color: '#f59e0b', route: 'MobilePesticideQuery' },
-      { id: 4, name: '补贴申请', icon: 'Wallet', color: '#8b5cf6', route: 'MobileSubsidy' },
-      { id: 5, name: '合同管理', icon: 'Tickets', color: '#ef4444', route: null },
-      { id: 6, name: '更多服务', icon: 'More', color: '#6b7280', route: null }
+      { id: 2, name: '种植备案', icon: 'Crop', color: '#10b981', route: 'MobilePlantingRecord' },
+      { id: 3, name: '收储申报', icon: 'Box', color: '#f59e0b', route: 'MobileStorageDeclare' },
+      { id: 4, name: '农药台账', icon: 'FirstAidKit', color: '#ef4444', route: 'MobilePesticideQuery' },
+      { id: 5, name: '补贴申请', icon: 'Wallet', color: '#1a3a5c', route: 'MobileSubsidy' },
+      { id: 6, name: '灾情上报', icon: 'Warning', color: '#ef4444', route: 'MobileIssueReport' },
+      { id: 7, name: '随手拍', icon: 'Camera', color: '#3b82f6', route: 'MobilePhotoReport' }
     ]
   }
   return [
@@ -193,7 +194,7 @@ const modules = computed(() => {
     { id: 2, name: '安全监管', icon: 'Warning', color: '#ef4444', route: 'MobileTaskList' },
     { id: 3, name: '青贮审核', icon: 'Crop', color: '#10b981', route: 'MobileTaskList' },
     { id: 4, name: '农药监管', icon: 'FirstAidKit', color: '#f59e0b', route: null },
-    { id: 5, name: '数据分析', icon: 'DataAnalysis', color: '#8b5cf6', route: 'MobileStats' },
+    { id: 5, name: '数据分析', icon: 'DataAnalysis', color: '#1a3a5c', route: 'MobileStats' },
     { id: 6, name: '更多功能', icon: 'More', color: '#6b7280', route: null }
   ]
 })
@@ -251,7 +252,11 @@ const handleModule = (mod) => {
     MobilePesticideQuery: 'MobilePesticideQuery',
     MobileSubsidy: 'MobileSubsidy',
     MobileSilageApply: 'MobileSilageApply',
-    MobileIssueReport: 'MobileIssueReport'
+    MobileIssueReport: 'MobileIssueReport',
+    MobileFarmingAdvice: 'MobileFarmingAdvice',
+    MobilePlantingRecord: 'MobilePlantingRecord',
+    MobileStorageDeclare: 'MobileStorageDeclare',
+    MobilePhotoReport: 'MobilePhotoReport'
   }
   const routeName = moduleRoutes[mod.route]
   if (routeName) {
@@ -298,7 +303,7 @@ const handleLogout = () => {
 }
 
 .home-header {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: #1a3a5c;
   padding: 20px;
   display: flex;
   justify-content: space-between;
@@ -331,7 +336,7 @@ const handleLogout = () => {
   padding: 20px;
   margin-top: -20px;
   background: #fff;
-  border-radius: 20px 20px 0 0;
+  border-radius: 4px 4px 0 0;
 }
 
 .action-card {
@@ -340,7 +345,7 @@ const handleLogout = () => {
   align-items: center;
   gap: 8px;
   padding: 16px 8px;
-  border-radius: 12px;
+  border-radius: 4px;
   background: #f9fafb;
   cursor: pointer;
   transition: all 0.3s;
@@ -354,7 +359,7 @@ const handleLogout = () => {
 .action-icon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -419,7 +424,7 @@ const handleLogout = () => {
   color: #fff;
   font-size: 12px;
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: 4px;
 }
 
 .module-grid {
@@ -435,7 +440,7 @@ const handleLogout = () => {
   gap: 8px;
   padding: 20px 12px;
   background: #f9fafb;
-  border-radius: 12px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -468,13 +473,13 @@ const handleLogout = () => {
   gap: 12px;
   padding: 14px;
   background: #f9fafb;
-  border-radius: 12px;
+  border-radius: 4px;
   cursor: pointer;
 }
 
 .task-type {
   padding: 4px 10px;
-  border-radius: 6px;
+  border-radius: 4px;
   color: #fff;
   font-size: 12px;
   font-weight: 500;

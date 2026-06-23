@@ -135,11 +135,37 @@ const reportForm = reactive({
   remark: ''
 })
 
-const historyRecords = ref([
-  { id: 1, date: '2024-01-14', growthStage: '拔节期', area: 500 },
-  { id: 2, date: '2024-01-10', growthStage: '分蘖期', area: 800 },
-  { id: 3, date: '2024-01-05', growthStage: '出苗期', area: 1200 }
-])
+const historyRecords = ref(loadMobileSowingDetails().map((item, index) => ({
+  id: item.id || index + 1,
+  date: item.sowingTime || item.reportTime,
+  growthStage: getGrowthStageName(item.growthStage) || '播种期',
+  area: item.sowedArea
+})))
+
+function loadMobileSowingDetails() {
+  try {
+    return JSON.parse(localStorage.getItem('mobileSowingDetails') || '[]')
+  } catch (error) {
+    return []
+  }
+}
+
+const saveMobileSowingDetails = (details) => {
+  localStorage.setItem('mobileSowingDetails', JSON.stringify(details))
+}
+
+function getGrowthStageName(stage) {
+  const map = {
+    sowing: '播种期',
+    seedling: '出苗期',
+    tillering: '分蘖期',
+    jointing: '拔节期',
+    heading: '抽穗期',
+    maturity: '成熟期',
+    harvest: '收获期'
+  }
+  return map[stage] || stage || '未知阶段'
+}
 
 const goBack = () => router.back()
 const handleHistory = () => ElMessage.info('历史记录页面开发中')
@@ -166,8 +192,40 @@ const handleSubmit = () => {
     ElMessage.warning('请输入种植面积')
     return
   }
+  if (reportForm.completedArea === 0) {
+    ElMessage.warning('请输入已完成面积')
+    return
+  }
   
-  ElMessage.success('填报提交成功')
+  const details = loadMobileSowingDetails()
+  const newDetail = {
+    id: `MOB-SOW-${Date.now()}`,
+    type: 'sowing',
+    source: 'wanqitong',
+    taskId: taskInfo.id,
+    farmerName: '皖企通上报主体',
+    plotId: `${taskInfo.id}-P${details.length + 1}`,
+    plotArea: reportForm.plantingArea,
+    sowedArea: reportForm.completedArea,
+    sowingTime: reportForm.date,
+    cropVariety: getGrowthStageName(reportForm.growthStage),
+    growthStage: reportForm.growthStage,
+    growthStatus: reportForm.growthStatus,
+    photos: [...reportForm.photos],
+    remark: reportForm.remark,
+    reportTime: new Date().toLocaleString('zh-CN', { hour12: false })
+  }
+  details.unshift(newDetail)
+  saveMobileSowingDetails(details)
+  historyRecords.value.unshift({
+    id: newDetail.id,
+    date: newDetail.sowingTime,
+    growthStage: getGrowthStageName(newDetail.growthStage),
+    area: newDetail.sowedArea
+  })
+  taskInfo.completedArea = reportForm.completedArea
+  taskInfo.progress = Math.min(Number(((reportForm.completedArea / reportForm.plantingArea) * 100).toFixed(2)), 100)
+  ElMessage.success('填报提交成功，已同步到播种进度明细库')
   router.back()
 }
 </script>
@@ -180,7 +238,7 @@ const handleSubmit = () => {
 }
 
 .page-header {
-  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+  background: #1a3a5c;
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -208,7 +266,7 @@ const handleSubmit = () => {
 
 .task-info-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -244,7 +302,7 @@ const handleSubmit = () => {
 
 .form-section, .history-section {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -341,8 +399,7 @@ const handleSubmit = () => {
   padding: 12px 16px;
   display: flex;
   gap: 12px;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-}
+  }
 
 .action-bar .el-button {
   flex: 1;

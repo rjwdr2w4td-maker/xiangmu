@@ -209,7 +209,7 @@ const handleReject = () => {
 }
 
 .page-header {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: #1a3a5c;
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -237,7 +237,7 @@ const handleReject = () => {
 
 .status-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 20px;
   text-align: center;
   margin-bottom: 16px;
@@ -267,7 +267,7 @@ const handleReject = () => {
 
 .info-section {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -309,7 +309,7 @@ const handleReject = () => {
 
 .decompose-item {
   background: #f9fafb;
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 12px;
 }
 
@@ -345,7 +345,7 @@ const handleReject = () => {
   gap: 12px;
   padding: 12px;
   background: #f9fafb;
-  border-radius: 8px;
+  border-radius: 4px;
   cursor: pointer;
 }
 
@@ -392,8 +392,7 @@ const handleReject = () => {
   padding: 12px 16px;
   display: flex;
   gap: 12px;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
-}
+  }
 
 .action-bar .el-button {
   flex: 1;

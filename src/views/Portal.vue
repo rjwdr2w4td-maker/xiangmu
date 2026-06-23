@@ -182,19 +182,19 @@ const banners = [
     id: 1,
     title: '智慧监管 保障粮食安全',
     description: '基于遥感、大数据、AI技术的粮食生产安全监测监管平台',
-    bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+    bgColor: '#1a3a5c'
   },
   {
     id: 2,
     title: '到户到田 精准管理',
     description: '实现种植计划到户、种植地块到田的精细化管理',
-    bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+    bgColor: '#2d5a8a'
   },
   {
     id: 3,
     title: '移动办公 随时随地',
     description: '皖政通、皖企通移动端应用，支持离线操作',
-    bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+    bgColor: '#c0392b'
   }
 ]
 
@@ -204,7 +204,7 @@ const systems = [
     name: '粮食计划管理系统',
     description: '种植计划制定、进度调度、统计分析',
     icon: 'Document',
-    color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: '#1a3a5c',
     moduleCount: 7,
     path: '/grain-plan/subject'
   },
@@ -213,7 +213,7 @@ const systems = [
     name: '粮食安全监管系统',
     description: '事件智能发现、核查处置、风险预警',
     icon: 'Warning',
-    color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+    color: '#c0392b',
     moduleCount: 5,
     path: '/grain-security/discovery'
   },
@@ -222,7 +222,7 @@ const systems = [
     name: '青贮饲料管理系统',
     description: '种植备案、收储申报、生产管理',
     icon: 'Crop',
-    color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+    color: '#2d5a8a',
     moduleCount: 4,
     path: '/silage/planting'
   },
@@ -231,7 +231,7 @@ const systems = [
     name: '农药数字监管系统',
     description: '生产台账、经营台账、追溯查询',
     icon: 'FirstAidKit',
-    color: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+    color: '#27ae60',
     moduleCount: 6,
     path: '/pesticide/production'
   }
@@ -333,19 +333,15 @@ const handleOpenMobileDemo = () => {
 <style scoped>
 .portal-container {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.2), transparent 24%),
-    radial-gradient(circle at 88% 12%, rgba(245, 158, 11, 0.14), transparent 30%),
-    linear-gradient(180deg, #07111f 0%, #172554 24%, #eef4ff 24%, #f8fbff 100%);
-  color: #172554;
+  background: #f5f6f8;
+  color: #333;
 }
 
 .portal-header {
-  background: rgba(15, 23, 42, 0.72);
+  background: #001529;
   padding: 22px 0;
   box-shadow: none;
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(191, 219, 254, 0.24);
+  border-bottom: 1px solid #e8e8e8;
   position: sticky;
   top: 0;
   z-index: 30;
@@ -371,23 +367,22 @@ const handleOpenMobileDemo = () => {
   height: 56px;
   margin-right: 18px;
   padding: 12px;
-  border-radius: 18px;
+  border-radius: 4px;
   color: #fed7aa;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.78), rgba(245, 158, 11, 0.2));
-  box-shadow: inset 0 0 0 1px rgba(249, 214, 137, 0.22), 0 14px 36px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .logo-text h1 {
   font-size: 25px;
   margin: 0;
   letter-spacing: 0.06em;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .logo-text p {
   font-size: 11px;
   margin: 6px 0 0 0;
-  color: rgba(236, 253, 245, 0.66);
+  color: rgba(255, 255, 255, 0.6);
   letter-spacing: 0.08em;
 }
 
@@ -398,9 +393,9 @@ const handleOpenMobileDemo = () => {
 }
 
 .portal-banner :deep(.el-carousel) {
-  border-radius: 34px;
+  border-radius: 4px;
   overflow: hidden;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
 .banner-content {
@@ -418,22 +413,7 @@ const handleOpenMobileDemo = () => {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(90deg, rgba(15, 23, 42, 0.82), rgba(30, 64, 175, 0.36)),
-    url('https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=realistic%20wide%20aerial%20Anhui%20farmland%20rice%20fields%20remote%20sensing%20digital%20map%20dashboard%20overlay%2C%20green%20and%20gold%20government%20technology%2C%20cinematic%2C%20high%20detail%2C%20no%20text&image_size=landscape_16_9') center/cover;
-  opacity: 0.92;
-}
-
-.banner-content::after {
-  content: '';
-  position: absolute;
-  width: 420px;
-  height: 420px;
-  right: 80px;
-  top: 40px;
-  border-radius: 50%;
-  border: 1px solid rgba(249, 214, 137, 0.26);
-  box-shadow: inset 0 0 60px rgba(56, 189, 248, 0.18), 0 0 80px rgba(59, 130, 246, 0.16);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .banner-text {
@@ -447,22 +427,21 @@ const handleOpenMobileDemo = () => {
   font-size: 56px;
   line-height: 1.08;
   margin: 0 0 22px 0;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.04em;
-  text-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
 }
 
 .banner-text p {
   font-size: 20px;
   margin: 0 0 34px 0;
-  color: rgba(236, 253, 245, 0.86);
+  color: rgba(255, 255, 255, 0.86);
   line-height: 1.8;
 }
 
 .banner-btn {
   height: 48px;
   padding: 0 28px;
-  box-shadow: 0 18px 36px rgba(29, 78, 216, 0.32);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .section-title {
@@ -474,7 +453,7 @@ const handleOpenMobileDemo = () => {
   font-size: 36px;
   color: #172554;
   margin: 0 0 12px 0;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.04em;
 }
 
@@ -484,8 +463,7 @@ const handleOpenMobileDemo = () => {
   width: 88px;
   height: 4px;
   margin: 16px auto 0;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #f59e0b, #38bdf8);
+  background: #c0392b;
 }
 
 .section-title p {
@@ -507,35 +485,33 @@ const handleOpenMobileDemo = () => {
   transition: all 0.35s;
   margin-bottom: 24px;
   min-height: 300px;
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(59, 130, 246, 0.12);
-  box-shadow: 0 20px 50px rgba(30, 64, 175, 0.1);
-  backdrop-filter: blur(18px);
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .system-card:hover {
-  transform: translateY(-12px) scale(1.015);
-  box-shadow: 0 30px 70px rgba(30, 64, 175, 0.16);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .system-icon {
   width: 78px;
   height: 78px;
-  border-radius: 24px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 0 24px;
   color: #fff;
-  box-shadow: 0 18px 34px rgba(30, 64, 175, 0.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .system-card h3 {
   font-size: 22px;
   color: #172554;
   margin: 0 0 12px 0;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .system-desc {
@@ -556,9 +532,7 @@ const handleOpenMobileDemo = () => {
 }
 
 .portal-mobile {
-  background:
-    linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 64, 175, 0.94)),
-    radial-gradient(circle at 20% 0%, rgba(56, 189, 248, 0.22), transparent 34%);
+  background: #1a3a5c;
   padding: 76px 46px;
 }
 
@@ -568,16 +542,16 @@ const handleOpenMobileDemo = () => {
 }
 
 .portal-mobile .section-title p {
-  color: rgba(236, 253, 245, 0.72);
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .mobile-card {
   text-align: center;
   padding: 32px;
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.58);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.18);
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .mobile-header {
@@ -607,7 +581,7 @@ const handleOpenMobileDemo = () => {
   width: 160px;
   min-height: 180px;
   border: 2px dashed #ddd;
-  border-radius: 8px;
+  border-radius: 4px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -629,7 +603,7 @@ const handleOpenMobileDemo = () => {
   gap: 3px;
   padding: 12px;
   background: #f8fafc;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .qr-grid span {
@@ -654,23 +628,23 @@ const handleOpenMobileDemo = () => {
   height: 420px;
   margin: 0 auto;
   background: #111827;
-  border-radius: 28px;
+  border-radius: 4px;
   padding: 12px;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
 
 .phone-top {
   width: 58px;
   height: 5px;
-  border-radius: 999px;
+  border-radius: 4px;
   background: #374151;
   margin: 2px auto 10px;
 }
 
 .phone-screen {
   height: 380px;
-  border-radius: 20px;
-  background: linear-gradient(180deg, #f8fafc 0%, #e0f2fe 100%);
+  border-radius: 4px;
+  background: #fff;
   padding: 20px 14px;
   overflow: hidden;
 }
@@ -692,8 +666,8 @@ const handleOpenMobileDemo = () => {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.86);
-  border-radius: 12px;
+  background: #f5f6f8;
+  border-radius: 4px;
   padding: 10px;
   margin-bottom: 10px;
   color: #1f2937;
@@ -709,26 +683,26 @@ const handleOpenMobileDemo = () => {
 .feature-item {
   text-align: left;
   padding: 32px;
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.76);
-  border: 1px solid rgba(59, 130, 246, 0.1);
-  box-shadow: 0 18px 46px rgba(30, 64, 175, 0.08);
+  border-radius: 4px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   min-height: 220px;
   transition: all 0.28s;
 }
 
 .feature-item:hover {
-  transform: translateY(-8px);
   background: #fff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .feature-icon {
   width: 66px;
   height: 66px;
-  border-radius: 22px;
+  border-radius: 4px;
   color: #2563eb;
   margin-bottom: 22px;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(245, 158, 11, 0.14));
+  background: rgba(37, 99, 235, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -738,7 +712,7 @@ const handleOpenMobileDemo = () => {
   font-size: 20px;
   color: #172554;
   margin: 0 0 12px 0;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .feature-item p {
@@ -749,10 +723,10 @@ const handleOpenMobileDemo = () => {
 }
 
 .portal-footer {
-  background: linear-gradient(110deg, #07111f, #1e3a8a);
+  background: #001529;
   padding: 46px 0;
   color: #fff;
-  border-top: 1px solid rgba(191, 219, 254, 0.18);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .footer-content {
@@ -767,7 +741,7 @@ const handleOpenMobileDemo = () => {
 .footer-info p {
   margin: 6px 0;
   font-size: 14px;
-  color: rgba(236, 253, 245, 0.72);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .footer-links {

@@ -247,7 +247,7 @@ const handleSubmit = () => {
 }
 
 .page-header {
-  background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+  background: #1a3a5c;
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -275,7 +275,7 @@ const handleSubmit = () => {
 
 .task-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -313,7 +313,7 @@ const handleSubmit = () => {
 
 .location-section, .photo-section, .form-section {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -381,7 +381,7 @@ const handleSubmit = () => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+  background: rgba(0, 0, 0, 0.5);
   padding: 20px 8px 8px;
   display: flex;
   flex-direction: column;

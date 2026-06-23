@@ -2,12 +2,12 @@
   <div class="mobile-issue-report">
     <div class="page-header">
       <el-icon @click="goBack"><ArrowLeft /></el-icon>
-      <h3>问题上报</h3>
+      <h3>{{ pageTitle }}</h3>
     </div>
 
     <div class="form-content">
       <div class="form-section">
-        <h3 class="section-title">问题类型</h3>
+        <h3 class="section-title">{{ isWanqitong ? '灾情类型' : '问题类型' }}</h3>
         <div class="issue-types">
           <div
             class="type-item"
@@ -23,17 +23,17 @@
       </div>
 
       <div class="form-section">
-        <h3 class="section-title">问题描述</h3>
+        <h3 class="section-title">{{ isWanqitong ? '灾情描述' : '问题描述' }}</h3>
         <el-form :model="applyForm" label-position="top">
-          <el-form-item label="问题标题">
-            <el-input v-model="applyForm.title" placeholder="请简要描述问题" maxlength="50" show-word-limit />
+          <el-form-item :label="isWanqitong ? '灾情标题' : '问题标题'">
+            <el-input v-model="applyForm.title" :placeholder="isWanqitong ? '请简要描述灾情' : '请简要描述问题'" maxlength="50" show-word-limit />
           </el-form-item>
           <el-form-item label="详细描述">
             <el-input
               v-model="applyForm.description"
               type="textarea"
               :rows="4"
-              placeholder="请详细描述问题情况"
+              :placeholder="isWanqitong ? '请详细描述灾情、受灾面积和现场处置情况' : '请详细描述问题情况'"
               maxlength="500"
               show-word-limit
             />
@@ -168,7 +168,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -178,15 +178,24 @@ const route = useRoute()
 const gpsStatus = ref('')
 const photoDialogVisible = ref(false)
 const photoLabel = ref('')
+const isWanqitong = computed(() => route.params.entry === 'wanqitong')
+const pageTitle = computed(() => isWanqitong.value ? '灾情上报' : '问题上报')
 
-const issueTypes = [
+const issueTypes = computed(() => isWanqitong.value ? [
+  { id: 'frost', name: '倒春寒', icon: 'Cloudy', color: '#3b82f6' },
+  { id: 'drought', name: '春旱', icon: 'Sunny', color: '#f59e0b' },
+  { id: 'flood', name: '洪涝', icon: 'Pouring', color: '#06b6d4' },
+  { id: 'pest', name: '病虫害', icon: 'Warning', color: '#ef4444' },
+  { id: 'wind', name: '大风倒伏', icon: 'WindPower', color: '#1a3a5c' },
+  { id: 'other', name: '其他灾情', icon: 'More', color: '#6b7280' }
+] : [
   { id: 'area', name: '面积异常', icon: 'Document', color: '#3b82f6' },
   { id: 'crop', name: '作物不符', icon: 'Crop', color: '#10b981' },
   { id: 'abandoned', name: '耕地抛荒', icon: 'Warning', color: '#ef4444' },
-  { id: 'illegal', name: '非法占用', icon: 'Lock', color: '#8b5cf6' },
+  { id: 'illegal', name: '非法占用', icon: 'Lock', color: '#1a3a5c' },
   { id: 'disaster', name: '灾害损失', icon: 'Cloudy', color: '#f59e0b' },
   { id: 'other', name: '其他问题', icon: 'More', color: '#6b7280' }
-]
+])
 
 const applyForm = reactive({
   issueType: '',
@@ -221,6 +230,36 @@ const getStatusType = (status) => {
 const getStatusName = (status) => {
   const map = { pending: '待处理', processed: '处理中', resolved: '已解决' }
   return map[status] || status
+}
+
+const loadMobileDisasterReports = () => {
+  try {
+    return JSON.parse(localStorage.getItem('mobileDisasterReports') || '[]')
+  } catch (error) {
+    return []
+  }
+}
+
+const saveMobileDisasterReports = (reports) => {
+  localStorage.setItem('mobileDisasterReports', JSON.stringify(reports))
+}
+
+const getIssueTypeName = (typeId) => issueTypes.value.find(item => item.id === typeId)?.name || '其他灾情'
+
+const getDisasterType = (typeId) => {
+  const map = {
+    frost: 'frost',
+    drought: 'drought',
+    flood: 'flood',
+    pest: 'pest',
+    wind: 'wind'
+  }
+  return map[typeId] || 'other'
+}
+
+const getAffectedArea = () => {
+  const matched = applyForm.description.match(/(\d+(?:\.\d+)?)\s*亩/)
+  return matched ? Number(matched[1]) : 0
 }
 
 const goBack = () => router.back()
@@ -269,11 +308,11 @@ const handleOffline = () => {
 
 const handleSubmit = () => {
   if (!applyForm.issueType) {
-    ElMessage.warning('请选择问题类型')
+    ElMessage.warning(isWanqitong.value ? '请选择灾情类型' : '请选择问题类型')
     return
   }
   if (!applyForm.title) {
-    ElMessage.warning('请输入问题标题')
+    ElMessage.warning(isWanqitong.value ? '请输入灾情标题' : '请输入问题标题')
     return
   }
   if (applyForm.photos.length === 0) {
@@ -281,12 +320,41 @@ const handleSubmit = () => {
     return
   }
 
-  ElMessageBox.confirm('确认立即上报问题吗？', '确认上报', {
+  ElMessageBox.confirm(isWanqitong.value ? '确认立即上报灾情吗？' : '确认立即上报问题吗？', '确认上报', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    ElMessage.success('问题上报成功')
+    if (isWanqitong.value) {
+      const affectedArea = getAffectedArea()
+      const report = {
+        id: `MOB-DIS-${Date.now()}`,
+        source: 'wanqitong',
+        type: getDisasterType(applyForm.issueType),
+        typeName: getIssueTypeName(applyForm.issueType),
+        level: applyForm.urgency === 'high' ? 'high' : 'medium',
+        region: { name: applyForm.location || '皖企通定位区域', counties: [applyForm.location || '皖企通定位区域'] },
+        affectedArea,
+        disasterArea: Math.round(affectedArea * 0.6),
+        estimatedLoss: affectedArea * 120,
+        status: 'processing',
+        reportTime: new Date().toLocaleString('zh-CN', { hour12: false }),
+        occurTime: applyForm.occurTime || new Date().toISOString().split('T')[0],
+        reporter: applyForm.reporter,
+        phone: applyForm.phone,
+        affectedCrops: ['小麦'],
+        measures: '移动端灾情上报，待县级核验后制定处置措施',
+        location: applyForm.location,
+        description: applyForm.description,
+        images: applyForm.photos.map(photo => photo.url),
+        dispatchFlows: []
+      }
+      const reports = loadMobileDisasterReports()
+      saveMobileDisasterReports([report, ...reports])
+      ElMessage.success('灾情上报成功，已同步到防灾减灾管理列表')
+    } else {
+      ElMessage.success('问题上报成功')
+    }
     historyRecords.value.unshift({
       id: Date.now(),
       title: applyForm.title,
@@ -306,7 +374,7 @@ const handleSubmit = () => {
 }
 
 .page-header {
-  background: linear-gradient(135deg, #ef4444 0%, #f87171 100%);
+  background: #ef4444;
   padding: 16px 20px;
   display: flex;
   align-items: center;
@@ -331,7 +399,7 @@ const handleSubmit = () => {
 
 .form-section {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -359,7 +427,7 @@ const handleSubmit = () => {
   gap: 8px;
   padding: 16px 8px;
   background: #f9fafb;
-  border-radius: 12px;
+  border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
   border: 2px solid transparent;
@@ -480,7 +548,7 @@ const handleSubmit = () => {
 
 .history-section {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
 }
 

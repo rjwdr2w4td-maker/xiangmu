@@ -94,7 +94,18 @@ import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { silageStorageRecords } from '@/data/silage'
 
-const records = ref(silageStorageRecords.map(item => ({ ...item })))
+function loadMobileStorageRecords() {
+  try {
+    return JSON.parse(localStorage.getItem('mobileStorageRecords') || '[]')
+  } catch (error) {
+    return []
+  }
+}
+
+const records = ref([
+  ...loadMobileStorageRecords(),
+  ...silageStorageRecords.map(item => ({ ...item }))
+])
 const detailVisible = ref(false)
 const formVisible = ref(false)
 const currentRecord = ref({})

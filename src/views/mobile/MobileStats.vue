@@ -124,7 +124,7 @@ const areaData = ref([
   { name: '小麦', value: 158, percent: 37, color: '#3b82f6' },
   { name: '水稻', value: 125, percent: 29, color: '#10b981' },
   { name: '玉米', value: 82, percent: 19, color: '#f59e0b' },
-  { name: '大豆', value: 38, percent: 9, color: '#8b5cf6' },
+  { name: '大豆', value: 38, percent: 9, color: '#1a3a5c' },
   { name: '油菜', value: 22, percent: 6, color: '#ef4444' }
 ])
 
@@ -145,7 +145,7 @@ const cropData = ref([
   { name: '小麦', area: 158, trend: 5.2, icon: 'Wheat', color: '#3b82f6' },
   { name: '水稻', area: 125, trend: 3.8, icon: 'Rice', color: '#10b981' },
   { name: '玉米', area: 82, trend: -2.1, icon: 'Corn', color: '#f59e0b' },
-  { name: '大豆', area: 38, trend: 8.5, icon: 'Soybean', color: '#8b5cf6' },
+  { name: '大豆', area: 38, trend: 8.5, icon: 'Soybean', color: '#1a3a5c' },
   { name: '油菜', area: 22, trend: 1.2, icon: 'Flower', color: '#ef4444' }
 ])
 
@@ -161,7 +161,7 @@ const handleExport = () => ElMessage.success('报表导出功能开发中')
 }
 
 .page-header {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: #1a3a5c;
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -197,7 +197,7 @@ const handleExport = () => ElMessage.success('报表导出功能开发中')
 
 .overview-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
   position: relative;
 }
@@ -234,7 +234,7 @@ const handleExport = () => ElMessage.success('报表导出功能开发中')
 .chart-section {
   background: #fff;
   margin: 12px 16px;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
 }
 
@@ -282,13 +282,13 @@ const handleExport = () => ElMessage.success('报表导出功能开发中')
   flex: 1;
   height: 12px;
   background: #f3f4f6;
-  border-radius: 6px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
 .bar-fill {
   height: 100%;
-  border-radius: 6px;
+  border-radius: 4px;
   transition: width 0.5s;
 }
 
@@ -308,7 +308,7 @@ const handleExport = () => ElMessage.success('报表导出功能开发中')
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: conic-gradient(#3b82f6 0% 37%, #10b981 37% 66%, #f59e0b 66% 85%, #8b5cf6 85% 94%, #ef4444 94% 100%);
+  background: conic-gradient(#3b82f6 0% 37%, #10b981 37% 66%, #f59e0b 66% 85%, #1a3a5c 85% 94%, #ef4444 94% 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -377,7 +377,7 @@ const handleExport = () => ElMessage.success('报表导出功能开发中')
 .ranking-order {
   width: 24px;
   height: 24px;
-  border-radius: 6px;
+  border-radius: 4px;
   background: #f3f4f6;
   display: flex;
   align-items: center;
@@ -422,13 +422,13 @@ const handleExport = () => ElMessage.success('报表导出功能开发中')
   gap: 12px;
   padding: 12px;
   background: #f9fafb;
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .crop-icon {
   width: 40px;
   height: 40px;
-  border-radius: 8px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;

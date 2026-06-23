@@ -66,10 +66,20 @@
         <el-table-column label="操作" width="280" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleView(row)">查看详情</el-button>
-            <el-button size="small" type="primary" @click="handleDecompose(row)">
+            <el-button
+              size="small"
+              type="primary"
+              :disabled="!isPlanApproved(row)"
+              @click="handleDecompose(row)"
+            >
               任务分解
             </el-button>
-            <el-button size="small" type="success" @click="handleSend(row)">
+            <el-button
+              size="small"
+              type="success"
+              :disabled="!canSendTask(row)"
+              @click="handleSend(row)"
+            >
               下达
             </el-button>
           </template>
@@ -79,7 +89,7 @@
 
     <el-dialog
       v-model="decomposeDialogVisible"
-      title="任务分解 - 省级对16市分解"
+      :title="`任务分解 - ${decomposeDialogSubtitle}`"
       width="900px"
     >
       <el-form :model="decomposeForm" label-width="100px">
@@ -96,22 +106,30 @@
           </el-col>
         </el-row>
 
-        <el-divider content-position="left">市级任务分解</el-divider>
+        <el-alert
+          :title="`当前登录层级：${getUserLevelName(currentUserLevel)}，当前分解对象：${decomposeTargetLabel}`"
+          type="info"
+          :closable="false"
+          style="margin-bottom: 16px"
+        />
+
+        <el-divider content-position="left">{{ decomposeTargetLabel }}</el-divider>
 
         <el-table :data="decomposeForm.cities" border style="width: 100%">
-          <el-table-column prop="name" label="市级名称" min-width="150" />
-          <el-table-column label="计划面积(亩)" min-width="200">
+          <el-table-column prop="name" :label="decomposeColumns[0].label" :min-width="decomposeColumns[0].minWidth" />
+          <el-table-column v-if="currentUserLevel === 'county'" prop="type" :label="decomposeColumns[1].label" :min-width="decomposeColumns[1].minWidth" />
+          <el-table-column :label="currentUserLevel === 'county' ? '承担面积(亩)' : '计划面积(亩)'">
             <template #default="{ row }">
               <el-input-number
                 v-model="row.planArea"
                 :min="0"
-                :step="10000"
+                :step="currentUserLevel === 'county' ? 50 : 10000"
                 size="small"
                 @change="updateTotalArea"
               />
             </template>
           </el-table-column>
-          <el-table-column label="承担主体类型" min-width="280">
+          <el-table-column v-if="currentUserLevel === 'province'" label="承担主体类型">
             <template #default="{ row }">
               <el-checkbox-group v-model="row.undertakerTypes">
                 <el-checkbox label="large_farmer">规模大户</el-checkbox>
@@ -120,13 +138,7 @@
               </el-checkbox-group>
             </template>
           </el-table-column>
-          <el-table-column label="关联地块" width="120">
-            <template #default="{ row }">
-              <el-button size="small" type="primary" @click="handleSelectPlots(row)">
-                选择地块
-              </el-button>
-            </template>
-          </el-table-column>
+          <el-table-column v-if="currentUserLevel === 'city'" prop="actualArea" label="已落实面积(亩)" />
         </el-table>
 
         <el-form-item label="总计面积" style="margin-top: 20px">
@@ -283,6 +295,10 @@
 import { ref, computed, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { plantingTasks } from '@/data/tasks'
+import { useUserStore } from '@/stores/user'
+import { administrativeDivisions } from '@/data/basic'
+
+const userStore = useUserStore()
 
 const searchForm = reactive({
   year: '2026',
@@ -354,6 +370,8 @@ const getCropName = (cropType) => {
 
 const getStatusName = (status) => {
   const map = {
+    pending_audit: '待审核',
+    approved: '审核通过',
     active: '执行中',
     pending: '待启动',
     completed: '已完成'
@@ -363,12 +381,18 @@ const getStatusName = (status) => {
 
 const getStatusTag = (status) => {
   const map = {
+    pending_audit: 'warning',
+    approved: 'success',
     active: 'success',
     pending: 'warning',
     completed: 'info'
   }
   return map[status] || ''
 }
+
+const isPlanApproved = (row) => ['approved', 'pending', 'active', 'completed'].includes(row.status)
+
+const canSendTask = (row) => isPlanApproved(row) && row.decomposition?.length > 0 && row.status !== 'active' && row.status !== 'completed'
 
 const formatArea = (area) => {
   return (area / 10000).toFixed(0)
@@ -380,6 +404,45 @@ const getProgressColor = (progress) => {
   if (progress >= 60) return '#E6A23C'
   return '#F56C6C'
 }
+
+const currentUserLevel = ref(localStorage.getItem('userLevel') || userStore.userLevel || 'province')
+
+const refreshCurrentUserLevel = () => {
+  currentUserLevel.value = localStorage.getItem('userLevel') || userStore.userLevel || 'province'
+}
+
+const getUserLevelName = (level) => {
+  const map = {
+    province: '省级用户',
+    city: '市级用户',
+    county: '县级用户',
+    town: '乡镇用户',
+    farmer: '种植主体'
+  }
+  return map[level] || '未设置'
+}
+
+const decomposeTargetLabel = computed(() => {
+  if (currentUserLevel.value === 'city') return '乡镇分解'
+  if (currentUserLevel.value === 'county') return '农户主体分解'
+  return '市级任务分解'
+})
+
+const decomposeDialogSubtitle = computed(() => {
+  if (currentUserLevel.value === 'city') return '市级任务分解 - 选择乡镇'
+  if (currentUserLevel.value === 'county') return '县级任务分解 - 选择农户主体'
+  return '省级对16市分解'
+})
+
+const decomposeColumns = computed(() => {
+  if (currentUserLevel.value === 'city') {
+    return [{ prop: 'name', label: '乡镇名称', minWidth: 150 }, { prop: 'planArea', label: '计划面积(亩)', minWidth: 200, slot: true }, { prop: 'actualArea', label: '已落实面积(亩)', minWidth: 150 }]
+  }
+  if (currentUserLevel.value === 'county') {
+    return [{ prop: 'name', label: '主体名称', minWidth: 180 }, { prop: 'type', label: '主体类型', minWidth: 140 }, { prop: 'planArea', label: '承担面积(亩)', minWidth: 200, slot: true }]
+  }
+  return [{ prop: 'name', label: '市级名称', minWidth: 150 }, { prop: 'planArea', label: '计划面积(亩)', minWidth: 200, slot: true }, { prop: 'undertakerTypes', label: '承担主体类型', minWidth: 280 }]
+})
 
 const handleSearch = () => {
   ElMessage.success(`已查询到${filteredTasks.value.length}条种植计划`)
@@ -407,7 +470,7 @@ const handleSaveAdd = async () => {
         name: addForm.value.name,
         cropType: addForm.value.cropType,
         totalArea: addForm.value.totalArea,
-        status: 'pending',
+        status: 'pending_audit',
         createTime: new Date().toISOString().split('T')[0],
         decomposition: [],
         remark: addForm.value.remark
@@ -425,44 +488,112 @@ const handleView = (row) => {
 }
 
 const handleDecompose = (row) => {
+  refreshCurrentUserLevel()
+
+  if (!isPlanApproved(row)) {
+    ElMessage.warning('计划审核通过后才可以进行任务分解')
+    return
+  }
+
   decomposeForm.taskId = row.id
   decomposeForm.taskName = row.name
   decomposeForm.cropTypeName = getCropName(row.cropType)
-  decomposeForm.totalArea = 0
-  decomposeForm.cities = [
-    { code: '340100', name: '合肥市', planArea: 0, undertakerTypes: [] },
-    { code: '340200', name: '芜湖市', planArea: 0, undertakerTypes: [] },
-    { code: '340300', name: '蚌埠市', planArea: 0, undertakerTypes: [] },
-    { code: '340400', name: '淮南市', planArea: 0, undertakerTypes: [] },
-    { code: '340500', name: '马鞍山市', planArea: 0, undertakerTypes: [] }
-  ]
+  decomposeForm.totalArea = row.decomposition?.reduce((sum, city) => sum + city.planArea, 0) || 0
+  
+  if (currentUserLevel.value === 'city') {
+    decomposeForm.cities = buildTownOptions(row.decomposition || [])
+  } else if (currentUserLevel.value === 'county') {
+    decomposeForm.cities = buildFarmerOptions(row.decomposition || [])
+  } else {
+    decomposeForm.cities = row.decomposition?.length ? row.decomposition.map(city => ({
+      ...city,
+      undertakerTypes: city.undertakerTypes || []
+    })) : [
+      { code: '340100', name: '合肥市', planArea: 0, undertakerTypes: [] },
+      { code: '340200', name: '芜湖市', planArea: 0, undertakerTypes: [] },
+      { code: '340300', name: '蚌埠市', planArea: 0, undertakerTypes: [] },
+      { code: '340400', name: '淮南市', planArea: 0, undertakerTypes: [] },
+      { code: '340500', name: '马鞍山市', planArea: 0, undertakerTypes: [] }
+    ]
+  }
+  
   decomposeDialogVisible.value = true
+}
+
+const buildTownOptions = (decomposition) => {
+  const userCityCode = userStore.userLevel === 'city' ? '340100' : null
+  const cityDivision = administrativeDivisions[0]?.children?.find(city => city.code === userCityCode) || administrativeDivisions[0]?.children?.[0]
+  const townList = (cityDivision?.children || []).map(county => ({
+    code: county.code,
+    name: county.name,
+    planArea: 0,
+    actualArea: 0,
+    type: 'town'
+  }))
+  return townList.length > 0 ? townList : [
+    { code: '340102', name: '瑶海区', planArea: 0, actualArea: 0, type: 'town' },
+    { code: '340103', name: '庐阳区', planArea: 0, actualArea: 0, type: 'town' },
+    { code: '340104', name: '蜀山区', planArea: 0, actualArea: 0, type: 'town' },
+    { code: '340111', name: '包河区', planArea: 0, actualArea: 0, type: 'town' },
+    { code: '340121', name: '长丰县', planArea: 0, actualArea: 0, type: 'town' },
+    { code: '340122', name: '肥东县', planArea: 0, actualArea: 0, type: 'town' }
+  ]
+}
+
+const buildFarmerOptions = (decomposition) => {
+  const subjects = [
+    { code: 'SUBJ001', name: '张明家庭农场', type: '家庭农场', planArea: 0 },
+    { code: 'SUBJ002', name: '李华种植专业合作社', type: '合作社', planArea: 0 },
+    { code: 'SUBJ003', name: '王强规模种植大户', type: '规模大户', planArea: 0 },
+    { code: 'SUBJ004', name: '赵强家庭农场', type: '家庭农场', planArea: 0 },
+    { code: 'SUBJ005', name: '陈明种植大户', type: '规模大户', planArea: 0 }
+  ]
+  return subjects
 }
 
 const updateTotalArea = () => {
   decomposeForm.totalArea = decomposeForm.cities.reduce((sum, city) => sum + city.planArea, 0)
 }
 
-const handleSelectPlots = (row) => {
-  row.selectedPlots = [
-    { id: `${row.code}-P001`, area: Math.round(row.planArea * 0.45) },
-    { id: `${row.code}-P002`, area: Math.round(row.planArea * 0.35) },
-    { id: `${row.code}-P003`, area: Math.max(row.planArea - Math.round(row.planArea * 0.8), 0) }
-  ]
-  ElMessage.success(`${row.name}已选择${row.selectedPlots.length}个演示地块`)
-}
-
 const handleSaveDecompose = () => {
+  const task = tasks.value.find(item => item.id === decomposeForm.taskId)
+  if (task) {
+    task.decomposition = decomposeForm.cities.map(city => ({
+      ...city,
+      actualArea: city.actualArea || 0,
+      progress: city.progress || 0,
+      counties: city.counties || []
+    }))
+  }
   ElMessage.success('任务分解已保存')
   decomposeDialogVisible.value = false
 }
 
 const handleSubmitDecompose = () => {
-  ElMessage.success('任务分解已提交审核，等待审核通过后下达')
+  const task = tasks.value.find(item => item.id === decomposeForm.taskId)
+  if (task) {
+    task.decomposition = decomposeForm.cities.map(city => ({
+      ...city,
+      actualArea: city.actualArea || 0,
+      progress: city.progress || 0,
+      counties: city.counties || []
+    }))
+    task.status = 'pending'
+  }
+  ElMessage.success('任务分解已提交，可进行下达')
   decomposeDialogVisible.value = false
 }
 
 const handleSend = (row) => {
+  if (!isPlanApproved(row)) {
+    ElMessage.warning('计划审核通过后才可以下达')
+    return
+  }
+  if (!row.decomposition?.length) {
+    ElMessage.warning('请先完成任务分解')
+    return
+  }
+  row.status = 'active'
   ElMessage.success(`计划"${row.name}"已下达至各市`)
 }
 

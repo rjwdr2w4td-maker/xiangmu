@@ -159,7 +159,7 @@ const handleNoticeClick = (notice) => {
 }
 
 .page-header {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: #1a3a5c;
   padding: 16px 20px;
   display: flex;
   justify-content: space-between;
@@ -195,9 +195,8 @@ const handleNoticeClick = (notice) => {
 
 .notice-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -290,7 +289,7 @@ const handleNoticeClick = (notice) => {
 .detail-content {
   padding: 16px;
   background: #f9fafb;
-  border-radius: 8px;
+  border-radius: 4px;
   line-height: 1.8;
   color: #374151;
 }
@@ -315,7 +314,7 @@ const handleNoticeClick = (notice) => {
   gap: 8px;
   padding: 12px;
   background: #f9fafb;
-  border-radius: 8px;
+  border-radius: 4px;
   margin-bottom: 8px;
 }
 

@@ -12,15 +12,23 @@
           <el-icon><Iphone /></el-icon>
           APP入口
         </el-button>
-        <el-dropdown>
+        <el-dropdown trigger="click">
           <span class="user-dropdown">
             <el-avatar :size="32">{{ userStore.userName?.charAt(0) || '用' }}</el-avatar>
             <span style="margin-left: 8px">{{ userStore.userName }}</span>
-            <el-icon><ArrowDown /></el-icon>
+            <el-tag size="small" style="margin-left: 8px">{{ getUserLevelName(userStore.userLevel) }}</el-tag>
+            <el-icon style="margin-left: 4px"><ArrowDown /></el-icon>
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
+              <el-dropdown-item>
+                <el-icon><User /></el-icon>
+                用户层级：{{ getUserLevelName(userStore.userLevel) || '未设置' }}
+              </el-dropdown-item>
+              <el-dropdown-item divided @click="handleLogout">
+                <el-icon><SwitchButton /></el-icon>
+                退出登录
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -50,7 +58,8 @@
             <el-menu-item index="/grain-plan/audit">种植计划审核</el-menu-item>
             <el-menu-item index="/grain-plan/progress">进度填报</el-menu-item>
             <el-menu-item index="/grain-plan/map">粮食生产一张图</el-menu-item>
-            <el-menu-item index="/grain-plan/disaster">防灾减灾</el-menu-item>
+            <el-menu-item index="/grain-plan/warning">气象灾害预警</el-menu-item>
+            <el-menu-item index="/grain-plan/disaster">灾情上报管理</el-menu-item>
           </el-sub-menu>
 
           <el-sub-menu index="grain-security">
@@ -205,6 +214,17 @@ const handleLogout = () => {
   router.push('/login')
   ElMessage.success('已退出登录')
 }
+
+const getUserLevelName = (level) => {
+  const map = {
+    province: '省级用户',
+    city: '市级用户',
+    county: '县级用户',
+    town: '乡镇用户',
+    farmer: '种植主体'
+  }
+  return map[level] || '未设置'
+}
 </script>
 
 <style scoped>
@@ -213,31 +233,20 @@ const handleLogout = () => {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(circle at 8% 0%, rgba(56, 189, 248, 0.18), transparent 28%),
-    radial-gradient(circle at 94% 8%, rgba(245, 158, 11, 0.14), transparent 30%),
-    linear-gradient(135deg, #eef4ff 0%, #f8fbff 48%, #f7f2e8 100%);
+  background: #f0f2f5;
   overflow: hidden;
 }
 
 .header {
   height: 72px;
-  background: linear-gradient(110deg, #0f172a 0%, #1e3a8a 46%, #2563eb 100%);
+  background: #001529;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 28px;
-  box-shadow: 0 18px 44px rgba(30, 64, 175, 0.22);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   position: relative;
   z-index: 10;
-}
-
-.header::after {
-  content: '';
-  position: absolute;
-  inset: auto 28px 0 28px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(249, 214, 137, 0.9), transparent);
 }
 
 .logo {
@@ -261,7 +270,6 @@ const handleLogout = () => {
   align-items: center;
   justify-content: center;
   font-size: 26px;
-  box-shadow: inset 0 0 0 1px rgba(249, 214, 137, 0.25);
 }
 
 .user-info {
@@ -284,18 +292,18 @@ const handleLogout = () => {
 
 .app-entry-card {
   min-height: 280px;
-  border: 1px solid rgba(59, 130, 246, 0.12);
-  border-radius: 22px;
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
   padding: 20px;
   text-align: center;
   transition: all 0.25s;
-  background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
-  box-shadow: 0 14px 35px rgba(30, 64, 175, 0.1);
+  background: #ffffff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .app-entry-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 45px rgba(6, 78, 59, 0.18);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .qr-wrapper {
@@ -305,7 +313,7 @@ const handleLogout = () => {
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
-  border: 2px solid rgba(59, 130, 246, 0.15);
+  border: 1px solid #dcdfe6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -372,7 +380,6 @@ const handleLogout = () => {
   padding: 8px 12px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
 }
 
 .main-content {
@@ -386,11 +393,9 @@ const handleLogout = () => {
 .sidebar {
   width: 248px;
   overflow-y: auto;
-  border-radius: 26px;
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(30, 58, 138, 0.98)),
-    radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.22), transparent 36%);
-  box-shadow: 0 24px 60px rgba(30, 64, 175, 0.22);
+  border-radius: 0;
+  background: #001529;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   padding: 10px;
 }
 
@@ -403,7 +408,7 @@ const handleLogout = () => {
 .sidebar :deep(.el-sub-menu__title) {
   height: 48px;
   margin: 6px 0;
-  border-radius: 16px;
+  border-radius: 4px;
   color: rgba(236, 253, 245, 0.82) !important;
   font-weight: 700;
 }
@@ -415,18 +420,16 @@ const handleLogout = () => {
 }
 
 .sidebar :deep(.el-menu-item.is-active) {
-  background: linear-gradient(90deg, rgba(245, 158, 11, 0.95), rgba(56, 189, 248, 0.78)) !important;
-  color: #0f172a !important;
-  box-shadow: 0 12px 26px rgba(59, 130, 246, 0.24);
+  background: #1a3a5c !important;
+  color: #409EFF !important;
+  box-shadow: none;
 }
 
 .content {
   flex: 1;
   padding: 22px;
   overflow-y: auto;
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.64);
-  backdrop-filter: blur(18px);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.74), 0 24px 70px rgba(30, 64, 175, 0.08);
+  border-radius: 4px;
+  background: #f0f2f5;
 }
 </style>

@@ -228,13 +228,26 @@
     <el-dialog v-model="plotDialogVisible" title="添加地块" width="500px">
       <el-form :model="plotForm" label-width="100px">
         <el-form-item label="地块编号" required>
-          <el-input v-model="plotForm.plotId" placeholder="请输入地块编号" />
+          <el-select 
+            v-model="plotForm.plotId" 
+            placeholder="请选择地块编号" 
+            style="width: 100%"
+            @change="handlePlotSelect"
+            filterable
+          >
+            <el-option
+              v-for="plot in plotOptions"
+              :key="plot.plotId"
+              :label="`${plot.plotId} (${plot.region} - ${plot.area}亩)`"
+              :value="plot.plotId"
+            />
+          </el-select>
         </el-form-item>
-        <el-form-item label="面积(亩)" required>
-          <el-input-number v-model="plotForm.area" :min="0" :step="10" style="width: 100%" />
+        <el-form-item label="面积(亩)">
+          <el-input-number v-model="plotForm.area" :min="0" :step="10" style="width: 100%" disabled />
         </el-form-item>
-        <el-form-item label="作物类型" required>
-          <el-select v-model="plotForm.cropType" placeholder="请选择作物类型" style="width: 100%">
+        <el-form-item label="作物类型">
+          <el-select v-model="plotForm.cropType" placeholder="自动带出" style="width: 100%" disabled>
             <el-option label="小麦" value="wheat" />
             <el-option label="水稻" value="rice" />
             <el-option label="玉米" value="corn" />
@@ -243,10 +256,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="经度">
-          <el-input-number v-model="plotForm.location[0]" :precision="6" :step="0.001" style="width: 100%" />
+          <el-input-number v-model="plotForm.location[0]" :precision="6" :step="0.001" style="width: 100%" disabled />
         </el-form-item>
         <el-form-item label="纬度">
-          <el-input-number v-model="plotForm.location[1]" :precision="6" :step="0.001" style="width: 100%" />
+          <el-input-number v-model="plotForm.location[1]" :precision="6" :step="0.001" style="width: 100%" disabled />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -285,6 +298,26 @@ const plotForm = ref({
   cropType: '',
   location: [117.27, 31.86]
 })
+
+const plotOptions = [
+  { plotId: 'PLOT2024001', area: 120, cropType: 'wheat', location: [117.283, 31.861], region: '店埠镇' },
+  { plotId: 'PLOT2024002', area: 85, cropType: 'rice', location: [117.265, 31.849], region: '撮镇镇' },
+  { plotId: 'PLOT2024003', area: 200, cropType: 'corn', location: [117.301, 31.872], region: '梁园镇' },
+  { plotId: 'PLOT2024004', area: 150, cropType: 'wheat', location: [117.312, 31.838], region: '桥头集镇' },
+  { plotId: 'PLOT2024005', area: 95, cropType: 'soybean', location: [117.256, 31.875], region: '长临河镇' },
+  { plotId: 'PLOT2024006', area: 180, cropType: 'rice', location: [117.278, 31.852], region: '包公镇' },
+  { plotId: 'PLOT2024007', area: 60, cropType: 'rapeseed', location: [117.295, 31.866], region: '石塘镇' },
+  { plotId: 'PLOT2024008', area: 130, cropType: 'wheat', location: [117.310, 31.845], region: '古城镇' }
+]
+
+const handlePlotSelect = (plotId) => {
+  const selected = plotOptions.find(p => p.plotId === plotId)
+  if (selected) {
+    plotForm.value.area = selected.area
+    plotForm.value.cropType = selected.cropType
+    plotForm.value.location = [...selected.location]
+  }
+}
 
 const subjects = ref([...plantingSubjects])
 
@@ -411,15 +444,12 @@ const handleAddPlot = () => {
 
 const handleSavePlot = () => {
   if (!plotForm.value.plotId) {
-    ElMessage.warning('请输入地块编号')
+    ElMessage.warning('请选择地块编号')
     return
   }
-  if (plotForm.value.area === 0) {
-    ElMessage.warning('请输入地块面积')
-    return
-  }
-  if (!plotForm.value.cropType) {
-    ElMessage.warning('请选择作物类型')
+  const exists = formData.plots.find(p => p.plotId === plotForm.value.plotId)
+  if (exists) {
+    ElMessage.warning('该地块已添加')
     return
   }
   formData.plots.push({
@@ -428,6 +458,7 @@ const handleSavePlot = () => {
     cropType: plotForm.value.cropType,
     location: plotForm.value.location
   })
+  formData.totalArea = formData.plots.reduce((sum, p) => sum + p.area, 0)
   plotDialogVisible.value = false
   ElMessage.success('地块添加成功')
 }

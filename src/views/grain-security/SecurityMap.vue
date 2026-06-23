@@ -50,10 +50,11 @@
         </div>
 
         <div class="map-stats">
-          <el-statistic title="总图斑数" :value="5" />
-          <el-statistic title="待核查" :value="2" />
-          <el-statistic title="问题属实" :value="2" />
-          <el-statistic title="已整改" :value="1" />
+          <el-statistic title="总图斑数" :value="12" />
+          <el-statistic title="待核查" :value="4" />
+          <el-statistic title="问题属实" :value="3" />
+          <el-statistic title="整改中" :value="2" />
+          <el-statistic title="已整改" :value="3" />
         </div>
       </div>
     </el-card>
@@ -122,26 +123,38 @@ const initMap = () => {
       attribution: '© OpenStreetMap'
     }).addTo(map)
 
-    changePlots.forEach(plot => {
+    const allPlots = [
+      ...changePlots,
+      { id: 'PLOT006', plotNo: 'AH-2026-00128', location: { coordinate: [31.72, 117.28] }, problemTypeName: '疑似撂荒', area: 145, riskLevel: 'high', status: 'pending_check', statusName: '待核查' },
+      { id: 'PLOT007', plotNo: 'AH-2026-00129', location: { coordinate: [31.55, 118.38] }, problemTypeName: '种植未落实', area: 88, riskLevel: 'medium', status: 'checking', statusName: '核查中' },
+      { id: 'PLOT008', plotNo: 'AH-2026-00130', location: { coordinate: [32.95, 117.36] }, problemTypeName: '疑似撂荒', area: 210, riskLevel: 'high', status: 'reported', statusName: '已上报' },
+      { id: 'PLOT009', plotNo: 'AH-2026-00131', location: { coordinate: [32.68, 117.00] }, problemTypeName: '非法占用', area: 65, riskLevel: 'medium', status: 'rectifying', statusName: '整改中' },
+      { id: 'PLOT010', plotNo: 'AH-2026-00132', location: { coordinate: [31.75, 117.50] }, problemTypeName: '种植未落实', area: 178, riskLevel: 'high', status: 'completed', statusName: '已整改' },
+      { id: 'PLOT011', plotNo: 'AH-2026-00133', location: { coordinate: [30.95, 117.78] }, problemTypeName: '疑似撂荒', area: 92, riskLevel: 'low', status: 'pending_check', statusName: '待核查' },
+      { id: 'PLOT012', plotNo: 'AH-2026-00134', location: { coordinate: [30.52, 117.05] }, problemTypeName: '种植未落实', area: 156, riskLevel: 'medium', status: 'checking', statusName: '核查中' }
+    ]
+
+    allPlots.forEach(plot => {
       const color = plot.status === 'pending_check' ? '#FFA500' : 
                     plot.status === 'completed' ? '#00FF00' : 
-                    plot.status === 'reported' ? '#FF0000' : '#808080'
+                    plot.status === 'reported' ? '#FF0000' :
+                    plot.status === 'rectifying' ? '#3b82f6' : '#808080'
       
       L.circleMarker(plot.location.coordinate, {
-        radius: 15,
+        radius: 12,
         fillColor: color,
         color: '#fff',
         weight: 2,
         fillOpacity: 0.8
       }).addTo(map).bindPopup(`
-        <div style="padding: 10px;">
-          <h4 style="margin: 0 0 10px 0;">${plot.plotNo}</h4>
-          <p style="margin: 5px 0;">问题类型：${plot.problemTypeName}</p>
-          <p style="margin: 5px 0;">面积：${plot.area}亩</p>
-          <p style="margin: 5px 0;">风险等级：${plot.riskLevel === 'high' ? '高风险' : '中风险'}</p>
-          <p style="margin: 5px 0;">状态：${plot.statusName}</p>
+        <div style="padding: 10px; min-width: 200px;">
+          <h4 style="margin: 0 0 10px 0; color: #1f2937;">${plot.plotNo}</h4>
+          <p style="margin: 5px 0; color: #4b5563;"><strong>问题类型：</strong>${plot.problemTypeName}</p>
+          <p style="margin: 5px 0; color: #4b5563;"><strong>面积：</strong>${plot.area}亩</p>
+          <p style="margin: 5px 0; color: #4b5563;"><strong>风险等级：</strong><span style="color: ${plot.riskLevel === 'high' ? '#ef4444' : plot.riskLevel === 'medium' ? '#f59e0b' : '#10b981'}">${plot.riskLevel === 'high' ? '高风险' : plot.riskLevel === 'medium' ? '中风险' : '低风险'}</span></p>
+          <p style="margin: 5px 0; color: #4b5563;"><strong>状态：</strong>${plot.statusName}</p>
           <button onclick="alert('查看详情功能演示')" 
-                  style="padding: 5px 10px; background: #409EFF; color: white; border: none; border-radius: 3px; cursor: pointer; margin-top: 10px;">
+                  style="padding: 8px 16px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; width: 100%;">
             钻取详情
           </button>
         </div>

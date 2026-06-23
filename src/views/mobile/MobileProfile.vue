@@ -122,7 +122,7 @@ const menuList = computed(() => {
   const commonMenus = [
     { id: 1, name: '个人信息', icon: 'User', color: '#3b82f6', badge: null, action: 'profile' },
     { id: 2, name: '修改密码', icon: 'Lock', color: '#f59e0b', badge: null, action: 'password' },
-    { id: 3, name: '通知消息', icon: 'Bell', color: '#8b5cf6', badge: 8, action: 'notifications' },
+    { id: 3, name: '通知消息', icon: 'Bell', color: '#1a3a5c', badge: 8, action: 'notifications' },
     { id: 4, name: '操作记录', icon: 'Clock', color: '#10b981', badge: null, action: 'history' }
   ]
   
@@ -191,7 +191,7 @@ const handleLogout = () => {
 }
 
 .profile-header {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: #1a3a5c;
   padding: 30px 20px;
 }
 
@@ -226,7 +226,7 @@ const handleLogout = () => {
   background: #fff;
   padding: 20px;
   margin: -20px 16px 16px;
-  border-radius: 12px;
+  border-radius: 4px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -251,7 +251,7 @@ const handleLogout = () => {
 .menu-section {
   background: #fff;
   margin: 16px;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 8px 0;
 }
 
@@ -291,7 +291,7 @@ const handleLogout = () => {
 .settings-section {
   background: #fff;
   margin: 16px;
-  border-radius: 12px;
+  border-radius: 4px;
   padding: 16px;
 }
 

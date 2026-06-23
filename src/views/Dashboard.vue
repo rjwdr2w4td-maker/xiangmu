@@ -3,7 +3,7 @@
     <el-row :gutter="20">
       <el-col :span="6">
         <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+          <div class="stat-icon" style="background: #1a3a5c">
             <el-icon><Document /></el-icon>
           </div>
           <div class="stat-content">
@@ -12,10 +12,10 @@
           </div>
         </div>
       </el-col>
-      
+
       <el-col :span="6">
         <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%)">
+          <div class="stat-icon" style="background: #c0392b">
             <el-icon><Warning /></el-icon>
           </div>
           <div class="stat-content">
@@ -24,10 +24,10 @@
           </div>
         </div>
       </el-col>
-      
+
       <el-col :span="6">
         <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)">
+          <div class="stat-icon" style="background: #2d5a8a">
             <el-icon><Crop /></el-icon>
           </div>
           <div class="stat-content">
@@ -36,10 +36,10 @@
           </div>
         </div>
       </el-col>
-      
+
       <el-col :span="6">
         <div class="stat-card">
-          <div class="stat-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)">
+          <div class="stat-icon" style="background: #27ae60">
             <el-icon><FirstAidKit /></el-icon>
           </div>
           <div class="stat-content">
@@ -65,7 +65,7 @@
           <div ref="chartRef" class="chart-container"></div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="8">
         <el-card class="chart-card">
           <template #header>
@@ -115,7 +115,7 @@
           </div>
         </el-card>
       </el-col>
-      
+
       <el-col :span="12">
         <el-card class="chart-card">
           <template #header>
@@ -182,11 +182,11 @@ onMounted(() => {
 
 const initChart = () => {
   const chart = echarts.init(chartRef.value)
-  
+
   const cities = ['合肥市', '芜湖市', '蚌埠市', '淮南市', '马鞍山市']
   const planData = [350, 280, 420, 310, 220]
   const actualData = [342, 275, 408, 300, 215]
-  
+
   const option = {
     tooltip: {
       trigger: 'axis',
@@ -224,13 +224,13 @@ const initChart = () => {
       }
     ]
   }
-  
+
   chart.setOption(option)
 }
 
 const initGrowthChart = () => {
   const chart = echarts.init(growthChartRef.value)
-  
+
   const option = {
     tooltip: {
       trigger: 'item'
@@ -259,7 +259,7 @@ const initGrowthChart = () => {
       }
     ]
   }
-  
+
   chart.setOption(option)
 }
 </script>
@@ -270,67 +270,47 @@ const initGrowthChart = () => {
 }
 
 .stat-card {
-  position: relative;
-  height: 132px;
-  border-radius: 26px;
-  padding: 24px;
   display: flex;
   align-items: center;
-  overflow: hidden;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(239, 246, 255, 0.82));
-  border: 1px solid rgba(59, 130, 246, 0.12);
-  box-shadow: 0 20px 50px rgba(30, 64, 175, 0.1);
-  transition: all 0.28s;
-}
-
-.stat-card::after {
-  content: '';
-  position: absolute;
-  right: -44px;
-  top: -44px;
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  background: rgba(56, 189, 248, 0.13);
+  padding: 24px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .stat-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 28px 66px rgba(30, 64, 175, 0.16);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .stat-icon {
-  width: 68px;
-  height: 68px;
-  border-radius: 22px;
+  width: 56px;
+  height: 56px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 32px;
-  box-shadow: 0 18px 36px rgba(30, 64, 175, 0.16);
+  font-size: 28px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
 
 .stat-content {
-  margin-left: 22px;
-  position: relative;
-  z-index: 1;
+  margin-left: 18px;
 }
 
 .stat-value {
-  font-size: 34px;
-  font-weight: 900;
-  color: #172554;
-  letter-spacing: -0.02em;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--sys-color-text-primary, #1f2937);
 }
 
 .stat-label {
-  font-size: 14px;
-  color: #64748b;
-  margin-top: 7px;
-  font-weight: 800;
+  font-size: 13px;
+  color: var(--sys-color-text-secondary, #6b7280);
+  margin-top: 4px;
+  font-weight: 400;
   white-space: nowrap;
 }
 
@@ -355,7 +335,7 @@ const initGrowthChart = () => {
   justify-content: space-between;
   align-items: center;
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .todo-list {
@@ -366,18 +346,13 @@ const initGrowthChart = () => {
 .todo-item {
   display: flex;
   align-items: center;
-  padding: 16px 14px;
-  border-bottom: 1px solid rgba(59, 130, 246, 0.08);
+  padding: 14px 12px;
+  border-bottom: 1px solid #e8e8e8;
   cursor: pointer;
-  transition: all 0.28s;
-  border-radius: 16px;
-  margin-bottom: 8px;
 }
 
 .todo-item:hover {
-  background: linear-gradient(90deg, rgba(239, 246, 255, 0.98), rgba(255, 251, 235, 0.86));
-  padding-left: 20px;
-  box-shadow: inset 3px 0 0 #f59e0b;
+  background: #f5f7fa;
 }
 
 .todo-item:last-child {
@@ -385,15 +360,14 @@ const initGrowthChart = () => {
 }
 
 .badge-item {
-  margin-right: 16px;
-  color: #2563eb;
+  margin-right: 14px;
+  color: var(--sys-color-primary, #2563eb);
 }
 
 .todo-text {
   flex: 1;
   font-size: 14px;
-  color: #334155;
-  font-weight: 800;
+  color: var(--sys-color-text-primary, #334155);
 }
 
 .warning-list {
@@ -403,16 +377,15 @@ const initGrowthChart = () => {
 
 .warning-item {
   padding: 12px 16px;
-  background: #f9fafb;
-  border-radius: 12px;
-  border: 1px solid rgba(59, 130, 246, 0.08);
+  background: #fafafa;
+  border-radius: 4px;
 }
 
 .warning-item h4 {
   margin: 0 0 6px;
   font-size: 14px;
   color: #1f2937;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .warning-item p {
