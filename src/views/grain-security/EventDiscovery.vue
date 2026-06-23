@@ -1,137 +1,81 @@
 <template>
-  <div class="event-discovery">
-    <el-card>
+  <div class="change-plot-library">
+    <el-card class="main-card">
       <template #header>
         <div class="card-header">
-          <span>事件智能发现（疑似撂荒/种植未落实AI识别）</span>
-          <el-button type="primary" @click="handleStartAnalysis">
-            <el-icon><VideoPlay /></el-icon>
-            启动AI识别分析
+          <span class="title">变化图斑库</span>
+          <el-button type="primary" @click="handleAutoDispatch">
+            <el-icon><Position /></el-icon>
+            自动下发
           </el-button>
         </div>
       </template>
 
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item label="发现时间">
-          <el-date-picker
-            v-model="searchForm.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-          />
-        </el-form-item>
-        
-        <el-form-item label="问题类型">
-          <el-select v-model="searchForm.problemType" placeholder="全部" clearable>
-            <el-option label="疑似撂荒" value="fallow" />
-            <el-option label="种植计划未落实" value="not_plant" />
-            <el-option label="非法占用" value="illegal_use" />
-          </el-select>
-        </el-form-item>
-        
-        <el-form-item label="风险等级">
-          <el-select v-model="searchForm.riskLevel" placeholder="全部" clearable>
-            <el-option label="高风险" value="high" />
-            <el-option label="中风险" value="medium" />
-            <el-option label="低风险" value="low" />
-          </el-select>
-        </el-form-item>
-        
-        <el-form-item label="处理状态">
-          <el-select v-model="searchForm.status" placeholder="全部" clearable>
-            <el-option label="待核查" value="pending_check" />
-            <el-option label="核查中" value="checking" />
-            <el-option label="已上报" value="reported" />
-            <el-option label="整改中" value="rectifying" />
-            <el-option label="已整改" value="completed" />
-          </el-select>
-        </el-form-item>
-        
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
+      <div class="filter-bar">
+        <el-input
+          v-model="searchKeyword"
+          placeholder="搜索图斑编号或位置"
+          clearable
+          style="width: 240px"
+          @clear="handleSearch"
+          @keyup.enter="handleSearch"
+        >
+          <template #prefix>
+            <el-icon><Search /></el-icon>
+          </template>
+        </el-input>
 
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <el-statistic title="疑似图斑总数" :value="stats.total" suffix="个">
-            <template #suffix>
-              <el-tag type="info" size="small">个</el-tag>
-            </template>
-          </el-statistic>
-        </el-col>
-        <el-col :span="8">
-          <el-statistic title="待核查" :value="stats.pending" suffix="个">
-            <template #suffix>
-              <el-tag type="danger" size="small">个</el-tag>
-            </template>
-          </el-statistic>
-        </el-col>
-        <el-col :span="8">
-          <el-statistic title="高风险图斑" :value="stats.highRisk" suffix="个">
-            <template #suffix>
-              <el-tag type="warning" size="small">个</el-tag>
-            </template>
-          </el-statistic>
-        </el-col>
-      </el-row>
+        <el-select v-model="filterStatus" placeholder="状态筛选" clearable style="width: 140px" @change="handleFilter">
+          <el-option label="待核查" value="pending_check" />
+          <el-option label="核查中" value="checking" />
+          <el-option label="待审核" value="pending_review" />
+          <el-option label="整改中" value="rectifying" />
+          <el-option label="已整改" value="completed" />
+          <el-option label="已结案" value="closed" />
+        </el-select>
 
-      <el-divider />
+        <el-select v-model="filterRisk" placeholder="风险等级" clearable style="width: 120px" @change="handleFilter">
+          <el-option label="高" value="high" />
+          <el-option label="中" value="medium" />
+          <el-option label="低" value="low" />
+        </el-select>
 
-      <el-table :data="paginatedPlots" border>
-        <el-table-column prop="plotNo" label="图斑编号" min-width="150" />
-        <el-table-column label="位置" min-width="200">
+        <el-button @click="handleResetFilter">重置</el-button>
+      </div>
+
+      <el-table
+        :data="paginatedPlots"
+        border
+        highlight-current-row
+        @row-click="handleRowClick"
+        style="width: 100%"
+      >
+        <el-table-column prop="plotNo" label="图斑编号" min-width="140" />
+        <el-table-column label="位置" min-width="180">
           <template #default="{ row }">
-            <div>{{ row.location.city }} {{ row.location.county }}</div>
-            <div style="font-size: 12px; color: #666">
-              {{ row.location.town }} {{ row.location.village }}
-            </div>
+            <span>{{ row.location.county }}/{{ row.location.town }}/{{ row.location.village }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="problemTypeName" label="问题类型" min-width="120">
+        <el-table-column prop="area" label="面积(亩)" width="100" sortable />
+        <el-table-column prop="problemTypeName" label="类型" width="130">
           <template #default="{ row }">
-            <el-tag :type="getProblemTypeTag(row.problemType)">
+            <el-tag :type="getProblemTypeTag(row.problemType)" size="small">
               {{ row.problemTypeName }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="area" label="面积(亩)" min-width="100" sortable />
-        <el-table-column prop="riskLevel" label="风险等级" min-width="100">
+        <el-table-column label="风险等级" width="90" align="center">
           <template #default="{ row }">
-            <el-tag :type="getRiskTag(row.riskLevel)">
+            <el-tag :type="getRiskTag(row.riskLevel)" size="small">
               {{ getRiskName(row.riskLevel) }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="discoveryTime" label="发现时间" min-width="160" />
-        <el-table-column prop="statusName" label="状态" min-width="100">
+        <el-table-column prop="statusName" label="状态" width="100" align="center">
           <template #default="{ row }">
-            <el-tag :type="getStatusTag(row.status)">
+            <el-tag :type="getStatusTag(row.status)" size="small">
               {{ row.statusName }}
             </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" min-width="280">
-          <template #default="{ row }">
-            <el-button size="small" @click="handleViewPlot(row)">查看详情</el-button>
-            <el-button
-              size="small"
-              type="primary"
-              @click="handleAssignTask(row)"
-              :disabled="row.status !== 'pending_check'"
-            >
-              下发任务
-            </el-button>
-            <el-button
-              size="small"
-              type="success"
-              @click="handleQuickReport(row)"
-              :disabled="row.status !== 'pending_check'"
-            >
-              随手拍上报
-            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -140,143 +84,107 @@
         v-model:current-page="pagination.currentPage"
         v-model:page-size="pagination.pageSize"
         :total="filteredPlots.length"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
-        style="margin-top: 20px; justify-content: flex-end"
+        :page-sizes="[10, 20, 50]"
+        layout="total, sizes, prev, pager, next"
+        style="margin-top: 16px; justify-content: flex-end"
       />
     </el-card>
 
-    <el-dialog
-      v-model="viewDialogVisible"
-      title="图斑详情 - 变化图斑库"
-      width="900px"
-    >
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="图斑编号">{{ viewData.plotNo }}</el-descriptions-item>
-        <el-descriptions-item label="问题类型">{{ viewData.problemTypeName }}</el-descriptions-item>
-        <el-descriptions-item label="面积">{{ viewData.area }}亩</el-descriptions-item>
-        <el-descriptions-item label="风险等级">{{ getRiskName(viewData.riskLevel) }}</el-descriptions-item>
-        <el-descriptions-item label="风险原因">{{ viewData.riskReason }}</el-descriptions-item>
-        <el-descriptions-item label="发现时间">{{ viewData.discoveryTime }}</el-descriptions-item>
-        <el-descriptions-item label="位置" :span="2">
-          {{ viewData.location.province }} {{ viewData.location.city }}
-          {{ viewData.location.county }} {{ viewData.location.town }}
-          {{ viewData.location.village }}
-        </el-descriptions-item>
-        <el-descriptions-item label="坐标" :span="2">
-          {{ viewData.location.coordinate[0] }}°E,
-          {{ viewData.location.coordinate[1] }}°N
-        </el-descriptions-item>
-      </el-descriptions>
+    <transition name="slide">
+      <el-card v-if="selectedPlot" class="detail-panel">
+        <template #header>
+          <div class="panel-header">
+            <span>图斑详情</span>
+            <el-button link @click="selectedPlot = null">
+              <el-icon><Close /></el-icon>
+            </el-button>
+          </div>
+        </template>
 
-      <div style="margin-top: 20px">
-        <h4>前后对比影像</h4>
-        <el-row :gutter="20">
+        <el-descriptions :column="1" border size="small">
+          <el-descriptions-item label="图斑编号">{{ selectedPlot.plotNo }}</el-descriptions-item>
+          <el-descriptions-item label="位置">
+            {{ selectedPlot.location.county }} {{ selectedPlot.location.town }} {{ selectedPlot.location.village }}
+          </el-descriptions-item>
+          <el-descriptions-item label="面积">{{ selectedPlot.area }} 亩</el-descriptions-item>
+          <el-descriptions-item label="风险等级">
+            <el-tag :type="getRiskTag(selectedPlot.riskLevel)" size="small">
+              {{ getRiskName(selectedPlot.riskLevel) }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="风险原因">
+            <div style="line-height: 1.6">{{ selectedPlot.riskReason }}</div>
+          </el-descriptions-item>
+        </el-descriptions>
+
+        <div class="section-title">变化前后对比图</div>
+        <el-row :gutter="12">
           <el-col :span="12">
-            <el-image
-              :src="viewData.beforeImage"
-              fit="cover"
-              style="width: 100%; height: 200px"
-            >
-              <template #placeholder>
-                <div style="display: flex; align-items: center; justify-content: center; height: 200px; background: #f5f7fa">
-                  <el-icon><Picture /></el-icon>
-                  <span style="margin-left: 10px">前时相影像</span>
-                </div>
-              </template>
-            </el-image>
-            <div style="text-align: center; margin-top: 10px">前时相影像（2025年10月）</div>
+            <div class="image-box">
+              <el-image
+                :src="selectedPlot.beforeImage"
+                fit="cover"
+                :preview-src-list="[selectedPlot.beforeImage]"
+              >
+                <template #error>
+                  <div class="image-placeholder">
+                    <el-icon><Picture /></el-icon>
+                    <span>前时相影像</span>
+                  </div>
+                </template>
+              </el-image>
+              <div class="image-label">前时相影像</div>
+            </div>
           </el-col>
           <el-col :span="12">
-            <el-image
-              :src="viewData.afterImage"
-              fit="cover"
-              style="width: 100%; height: 200px"
-            >
-              <template #placeholder>
-                <div style="display: flex; align-items: center; justify-content: center; height: 200px; background: #f5f7fa">
-                  <el-icon><Picture /></el-icon>
-                  <span style="margin-left: 10px">后时相影像</span>
-                </div>
-              </template>
-            </el-image>
-            <div style="text-align: center; margin-top: 10px">后时相影像（2026年3月）</div>
+            <div class="image-box">
+              <el-image
+                :src="selectedPlot.afterImage"
+                fit="cover"
+                :preview-src-list="[selectedPlot.afterImage]"
+              >
+                <template #error>
+                  <div class="image-placeholder">
+                    <el-icon><Picture /></el-icon>
+                    <span>后时相影像</span>
+                  </div>
+                </template>
+              </el-image>
+              <div class="image-label">后时相影像</div>
+            </div>
           </el-col>
         </el-row>
-      </div>
-    </el-dialog>
+
+        <div v-if="selectedPlot.checkResult" class="section-title">核查结果</div>
+        <el-descriptions v-if="selectedPlot.checkResult" :column="1" border size="small">
+          <el-descriptions-item label="核查人">{{ selectedPlot.checkResult.checker }}</el-descriptions-item>
+          <el-descriptions-item label="核查时间">{{ selectedPlot.checkResult.checkTime }}</el-descriptions-item>
+          <el-descriptions-item label="核查结论">
+            <el-tag :type="selectedPlot.checkResult.result === 'confirmed' ? 'danger' : 'success'" size="small">
+              {{ selectedPlot.checkResult.resultName }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="实际面积">{{ selectedPlot.checkResult.actualArea }} 亩</el-descriptions-item>
+          <el-descriptions-item label="核查说明">
+            <div style="line-height: 1.6">{{ selectedPlot.checkResult.description }}</div>
+          </el-descriptions-item>
+        </el-descriptions>
+      </el-card>
+    </transition>
 
     <el-dialog
-      v-model="assignDialogVisible"
-      title="任务下发 - 自动分配责任人"
-      width="600px"
+      v-model="dispatchDialogVisible"
+      title="自动下发确认"
+      width="400px"
     >
-      <el-form :model="assignForm" label-width="120px">
-        <el-form-item label="图斑编号">
-          <el-input v-model="assignForm.plotNo" disabled />
-        </el-form-item>
-        
-        <el-form-item label="责任区域">
-          <el-input v-model="assignForm.region" disabled />
-        </el-form-item>
-        
-        <el-form-item label="责任人">
-          <el-input v-model="assignForm.assignee" disabled />
-        </el-form-item>
-        
-        <el-form-item label="核查时限">
-          <el-date-picker
-            v-model="assignForm.deadline"
-            type="datetime"
-            placeholder="选择截止时间"
-          />
-        </el-form-item>
-        
-        <el-form-item label="备注">
-          <el-input
-            v-model="assignForm.remark"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入下发备注"
-          />
-        </el-form-item>
-      </el-form>
-
+      <div style="text-align: center; padding: 20px 0">
+        <el-icon style="font-size: 48px; color: #E6A23C"><WarningFilled /></el-icon>
+        <p style="margin-top: 16px; font-size: 16px">确定要自动下发所有待核查图斑吗?</p>
+      </div>
       <template #footer>
-        <el-button @click="assignDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleConfirmAssign">确认下发</el-button>
+        <el-button @click="dispatchDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmDispatch">确认下发</el-button>
       </template>
-    </el-dialog>
-
-    <el-dialog
-      v-model="analysisDialogVisible"
-      title="AI智能识别分析"
-      width="600px"
-    >
-      <el-progress
-        :percentage="analysisProgress"
-        :status="analysisProgress === 100 ? 'success' : ''"
-      />
-      <div style="margin-top: 20px; text-align: center">
-        <div v-if="analysisProgress < 100">
-          <el-icon class="is-loading" style="font-size: 24px; color: #409EFF">
-            <Loading />
-          </el-icon>
-          <p style="margin-top: 10px">正在进行遥感影像智能比对...</p>
-          <p style="color: #666; font-size: 12px">
-            比对时间范围：2025年10月 vs 2026年3月
-          </p>
-        </div>
-        <div v-else>
-          <el-icon style="font-size: 24px; color: #67C23A">
-            <SuccessFilled />
-          </el-icon>
-          <p style="margin-top: 10px; color: #67C23A">AI识别完成！</p>
-          <p style="color: #666; font-size: 12px">
-            共发现 {{ stats.total }} 个疑似图斑，其中高风险 {{ stats.highRisk }} 个
-          </p>
-        </div>
-      </div>
     </el-dialog>
   </div>
 </template>
@@ -286,12 +194,11 @@ import { ref, computed, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { changePlots } from '@/data/security'
 
-const searchForm = reactive({
-  dateRange: [],
-  problemType: '',
-  riskLevel: '',
-  status: ''
-})
+const searchKeyword = ref('')
+const filterStatus = ref('')
+const filterRisk = ref('')
+const selectedPlot = ref(null)
+const dispatchDialogVisible = ref(false)
 
 const pagination = reactive({
   currentPage: 1,
@@ -300,41 +207,34 @@ const pagination = reactive({
 
 const plots = ref([...changePlots])
 
-const viewDialogVisible = ref(false)
-const assignDialogVisible = ref(false)
-const analysisDialogVisible = ref(false)
-const analysisProgress = ref(0)
-
-const viewData = ref({})
-const assignForm = reactive({
-  plotNo: '',
-  region: '',
-  assignee: '',
-  deadline: '',
-  remark: ''
-})
-
-const stats = computed(() => {
-  return {
-    total: plots.value.length,
-    pending: plots.value.filter(p => p.status === 'pending_check' || p.status === 'checking').length,
-    highRisk: plots.value.filter(p => p.riskLevel === 'high').length
-  }
+const sortedPlots = computed(() => {
+  const riskOrder = { high: 0, medium: 1, low: 2 }
+  return [...plots.value].sort((a, b) => {
+    return riskOrder[a.riskLevel] - riskOrder[b.riskLevel]
+  })
 })
 
 const filteredPlots = computed(() => {
-  let result = plots.value
-  
-  if (searchForm.problemType) {
-    result = result.filter(p => p.problemType === searchForm.problemType)
+  let result = sortedPlots.value
+
+  if (searchKeyword.value) {
+    const keyword = searchKeyword.value.toLowerCase()
+    result = result.filter(p => 
+      p.plotNo.toLowerCase().includes(keyword) ||
+      p.location.county.includes(keyword) ||
+      p.location.town.includes(keyword) ||
+      p.location.village.includes(keyword)
+    )
   }
-  if (searchForm.riskLevel) {
-    result = result.filter(p => p.riskLevel === searchForm.riskLevel)
+
+  if (filterStatus.value) {
+    result = result.filter(p => p.status === filterStatus.value)
   }
-  if (searchForm.status) {
-    result = result.filter(p => p.status === searchForm.status)
+
+  if (filterRisk.value) {
+    result = result.filter(p => p.riskLevel === filterRisk.value)
   }
-  
+
   return result
 })
 
@@ -355,9 +255,9 @@ const getProblemTypeTag = (type) => {
 
 const getRiskName = (level) => {
   const map = {
-    high: '高风险',
-    medium: '中风险',
-    low: '低风险'
+    high: '高',
+    medium: '中',
+    low: '低'
   }
   return map[level] || level
 }
@@ -375,9 +275,10 @@ const getStatusTag = (status) => {
   const map = {
     pending_check: 'danger',
     checking: 'warning',
-    reported: 'primary',
+    pending_review: 'primary',
     rectifying: 'info',
-    completed: 'success'
+    completed: 'success',
+    closed: ''
   }
   return map[status] || ''
 }
@@ -386,64 +287,63 @@ const handleSearch = () => {
   pagination.currentPage = 1
 }
 
-const handleReset = () => {
-  searchForm.dateRange = []
-  searchForm.problemType = ''
-  searchForm.riskLevel = ''
-  searchForm.status = ''
+const handleFilter = () => {
+  pagination.currentPage = 1
 }
 
-const handleViewPlot = (row) => {
-  viewData.value = row
-  viewDialogVisible.value = true
+const handleResetFilter = () => {
+  searchKeyword.value = ''
+  filterStatus.value = ''
+  filterRisk.value = ''
+  pagination.currentPage = 1
 }
 
-const handleAssignTask = (row) => {
-  assignForm.plotNo = row.plotNo
-  assignForm.region = `${row.location.city} ${row.location.county}`
-  assignForm.assignee = row.location.county + '农业农村局'
-  assignForm.deadline = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-  assignForm.remark = ''
-  assignDialogVisible.value = true
+const handleRowClick = (row) => {
+  selectedPlot.value = row
 }
 
-const handleConfirmAssign = () => {
-  const plot = plots.value.find(item => item.plotNo === assignForm.plotNo)
-  if (plot) {
+const handleAutoDispatch = () => {
+  dispatchDialogVisible.value = true
+}
+
+const confirmDispatch = () => {
+  const pendingPlots = plots.value.filter(p => p.status === 'pending_check')
+  if (pendingPlots.length === 0) {
+    ElMessage.warning('暂无待核查图斑')
+    dispatchDialogVisible.value = false
+    return
+  }
+
+  const county = pendingPlots[0].location.county
+  pendingPlots.forEach(plot => {
     plot.status = 'checking'
     plot.statusName = '核查中'
-    plot.assignee = assignForm.assignee
-    plot.assignTime = new Date().toISOString().slice(0, 16).replace('T', ' ')
-  }
-  ElMessage.success('图斑任务已下发至' + assignForm.assignee)
-  assignDialogVisible.value = false
-}
+  })
 
-const handleQuickReport = (row) => {
-  row.status = 'reported'
-  row.statusName = '已上报'
-  row.reportTime = new Date().toISOString().slice(0, 16).replace('T', ' ')
-  row.reportSource = '移动端随手拍'
-  ElMessage.success(`${row.plotNo}已通过随手拍上报`)
-}
-
-const handleStartAnalysis = () => {
-  analysisProgress.value = 0
-  analysisDialogVisible.value = true
-  
-  const timer = setInterval(() => {
-    analysisProgress.value += 10
-    if (analysisProgress.value >= 100) {
-      clearInterval(timer)
-      ElMessage.success('AI智能识别分析完成')
-    }
-  }, 300)
+  dispatchDialogVisible.value = false
+  ElMessage.success(`已下发至${county}县农业农村局`)
 }
 </script>
 
 <style scoped>
-.event-discovery {
-  padding: 0;
+.change-plot-library {
+  display: flex;
+  gap: 16px;
+  height: calc(100vh - 140px);
+}
+
+.main-card {
+  flex: 1;
+  border-radius: 4px;
+}
+
+.main-card :deep(.el-card__header) {
+  padding: 16px 20px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.main-card :deep(.el-card__body) {
+  padding: 16px 20px;
 }
 
 .card-header {
@@ -452,13 +352,116 @@ const handleStartAnalysis = () => {
   align-items: center;
 }
 
-.search-form {
-  margin-bottom: 20px;
+.card-header .title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
 }
 
-h4 {
-  color: #333;
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.detail-panel {
+  width: 320px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: auto;
+}
+
+.detail-panel :deep(.el-card__header) {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.detail-panel :deep(.el-card__body) {
+  padding: 16px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   font-size: 16px;
-  margin: 10px 0;
+  font-weight: 600;
+  color: #303133;
+}
+
+.section-title {
+  margin: 16px 0 12px;
+  padding-left: 8px;
+  border-left: 3px solid #409EFF;
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.image-box {
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.image-box .el-image {
+  width: 100%;
+  height: 120px;
+}
+
+.image-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  background: #f5f7fa;
+  color: #909399;
+}
+
+.image-placeholder .el-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.image-label {
+  padding: 6px 0;
+  text-align: center;
+  font-size: 12px;
+  color: #606266;
+  background: #fafafa;
+  border-top: 1px solid #ebeef5;
+}
+
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+:deep(.el-table) {
+  --el-table-border-color: #ebeef5;
+  background-color: #fff;
+}
+
+:deep(.el-table th.el-table__cell) {
+  background-color: #fafafa;
+  color: #606266;
+  font-weight: 600;
+}
+
+:deep(.el-table--border .el-table__cell) {
+  border-right: 1px solid #ebeef5;
+}
+
+:deep(.el-descriptions__label) {
+  width: 80px;
+  font-weight: 500;
 }
 </style>

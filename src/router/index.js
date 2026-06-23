@@ -86,6 +86,18 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/grain-security/board',
+    name: 'TaskBoard',
+    component: () => import('@/views/grain-security/TaskBoard.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/grain-security/growth',
+    name: 'GrowthCompare',
+    component: () => import('@/views/grain-security/GrowthCompare.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/silage/planting',
     name: 'SilagePlanting',
     component: () => import('@/views/silage/PlantingManage.vue'),
