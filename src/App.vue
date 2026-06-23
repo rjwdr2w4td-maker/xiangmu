@@ -67,10 +67,12 @@
               <el-icon><Warning /></el-icon>
               <span>粮食安全监管</span>
             </template>
-            <el-menu-item index="/grain-security/discovery">事件智能发现</el-menu-item>
-            <el-menu-item index="/grain-security/process">事件分析流转</el-menu-item>
-            <el-menu-item index="/grain-security/handle">事件协同处置</el-menu-item>
+            <el-menu-item index="/grain-security/discovery">变化图斑库</el-menu-item>
             <el-menu-item index="/grain-security/map">粮食安全监测一张图</el-menu-item>
+            <el-menu-item index="/grain-security/process">图斑审核</el-menu-item>
+            <el-menu-item index="/grain-security/board">任务跟踪看板</el-menu-item>
+            <el-menu-item index="/grain-security/growth">在地作物长势对比图</el-menu-item>
+            <el-menu-item index="/grain-security/handle">事件协同处置</el-menu-item>
           </el-sub-menu>
 
           <el-sub-menu index="silage">
