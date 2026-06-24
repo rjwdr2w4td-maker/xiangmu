@@ -192,7 +192,7 @@ const modules = computed(() => {
     { id: 1, name: '计划审核', icon: 'DocumentChecked', color: '#3b82f6', route: 'MobileTaskList' },
     { id: 2, name: '安全监管', icon: 'Warning', color: '#ef4444', route: 'MobileTaskList' },
     { id: 3, name: '青贮审核', icon: 'Crop', color: '#10b981', route: 'MobileTaskList' },
-    { id: 4, name: '农药监管', icon: 'FirstAidKit', color: '#f59e0b', route: null },
+    { id: 4, name: '农药监管', icon: 'FirstAidKit', color: '#f59e0b', route: 'MobilePesticideQuery' },
     { id: 5, name: '数据分析', icon: 'DataAnalysis', color: '#1a3a5c', route: 'MobileStats' },
     { id: 6, name: '随手拍', icon: 'Camera', color: '#3b82f6', route: 'MobilePhotoReport' }
   ]

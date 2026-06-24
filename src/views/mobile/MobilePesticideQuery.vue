@@ -2,289 +2,412 @@
   <div class="mobile-pesticide">
     <div class="page-header">
       <el-icon @click="goBack"><ArrowLeft /></el-icon>
-      <h3>农药查询</h3>
+      <h3>{{ pageTitle }}</h3>
     </div>
 
-    <div class="search-section">
-      <el-input
-        v-model="searchKeyword"
-        placeholder="输入农药名称或登记证号"
-        size="large"
-        clearable
-        @keyup.enter="handleSearch"
-      >
-        <template #append>
-          <el-button @click="handleSearch">搜索</el-button>
-        </template>
-      </el-input>
-    </div>
+    <template v-if="isRegulatoryEntry">
+      <div class="regulatory-hero">
+        <div class="hero-title">辖区农药生产经营监管</div>
+        <div class="hero-subtitle">{{ selectedCity === 'all' ? '安徽省' : selectedCity }} · 企业档案、生产指标与流通记录</div>
+      </div>
 
-    <div class="quick-filter">
-      <el-tag
-        v-for="tag in filterTags"
-        :key="tag.value"
-        :type="activeFilter === tag.value ? '' : 'info'"
-        :effect="activeFilter === tag.value ? 'dark' : 'plain'"
-        @click="activeFilter = tag.value"
-      >
-        {{ tag.label }}
-      </el-tag>
-    </div>
+      <div class="toolbar-section">
+        <el-input
+          v-model="searchKeyword"
+          placeholder="搜索企业名称、许可证号或统一社会信用代码"
+          clearable
+        />
+        <el-select v-model="selectedCity" placeholder="选择城市" class="city-select">
+          <el-option label="全部城市" value="all" />
+          <el-option v-for="city in cityOptions" :key="city" :label="city" :value="city" />
+        </el-select>
+      </div>
 
-    <div class="result-list">
-      <div
-        class="pesticide-card"
-        v-for="item in filteredResults"
-        :key="item.id"
-        @click="handleDetail(item)"
-      >
-        <div class="card-header">
-          <el-tag :type="item.status === 'valid' ? 'success' : 'warning'" size="small">
-            {{ item.status === 'valid' ? '有效' : '过期' }}
-          </el-tag>
-          <span class="reg-no">{{ item.regNo }}</span>
-        </div>
-        <h4 class="pesticide-name">{{ item.name }}</h4>
-        <div class="card-info">
-          <span class="info-row">
-            <el-icon><OfficeBuilding /></el-icon>
-            {{ item.company }}
-          </span>
-          <span class="info-row">
-            <el-icon><Document /></el-icon>
-            {{ item.type }}
-          </span>
-        </div>
-        <div class="card-tags">
-          <el-tag v-for="usage in item.usages" :key="usage" size="small" type="info">
-            {{ usage }}
-          </el-tag>
+      <div class="metric-grid">
+        <div class="metric-card" v-for="metric in regulatoryMetrics" :key="metric.label">
+          <span class="metric-label">{{ metric.label }}</span>
+          <strong>{{ metric.value }}</strong>
+          <span class="metric-unit">{{ metric.unit }}</span>
         </div>
       </div>
 
-      <el-empty v-if="filteredResults.length === 0" description="暂无查询结果" />
-    </div>
+      <el-tabs v-model="activeCompanyTab" class="company-tabs">
+        <el-tab-pane label="生产企业" name="production">
+          <div class="company-list">
+            <div
+              class="company-card"
+              v-for="company in filteredProductionCompanies"
+              :key="company.id"
+              @click="openCompanyDetail(company, 'production')"
+            >
+              <div class="card-header">
+                <el-tag type="success" size="small">生产</el-tag>
+                <span class="city-name">{{ getCityName(company.address) }}</span>
+              </div>
+              <h4>{{ company.name }}</h4>
+              <div class="info-row">
+                <el-icon><Document /></el-icon>
+                {{ company.licenseNo }}
+              </div>
+              <div class="info-row">
+                <el-icon><OfficeBuilding /></el-icon>
+                {{ company.productionScope }}
+              </div>
+              <div class="mini-metrics">
+                <span>产品 {{ getCompanyProducts(company.id).length }}</span>
+                <span>批次 {{ getProductionBatches(company.id).length }}</span>
+                <span>产量 {{ formatNumber(getProductionTotal(company.id)) }} 箱</span>
+              </div>
+            </div>
+            <el-empty v-if="filteredProductionCompanies.length === 0" description="暂无生产企业" />
+          </div>
+        </el-tab-pane>
 
-    <el-dialog v-model="detailVisible" title="农药详情" width="100%">
+        <el-tab-pane label="经营企业" name="business">
+          <div class="company-list">
+            <div
+              class="company-card"
+              v-for="company in filteredBusinessCompanies"
+              :key="company.id"
+              @click="openCompanyDetail(company, 'business')"
+            >
+              <div class="card-header">
+                <el-tag type="primary" size="small">经营</el-tag>
+                <span class="city-name">{{ getCityName(company.address) }}</span>
+              </div>
+              <h4>{{ company.name }}</h4>
+              <div class="info-row">
+                <el-icon><Document /></el-icon>
+                {{ company.licenseNo }}
+              </div>
+              <div class="info-row">
+                <el-icon><OfficeBuilding /></el-icon>
+                {{ company.businessType }}
+              </div>
+              <div class="mini-metrics">
+                <span>入库 {{ formatNumber(getBusinessInTotal(company.id)) }} 箱</span>
+                <span>出库 {{ formatNumber(getBusinessOutTotal(company.id)) }} 箱</span>
+                <span>记录 {{ getBusinessFlows(company.id).length }}</span>
+              </div>
+            </div>
+            <el-empty v-if="filteredBusinessCompanies.length === 0" description="暂无经营企业" />
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </template>
+
+    <template v-else>
+      <div class="search-section">
+        <el-input
+          v-model="searchKeyword"
+          placeholder="输入农药名称、登记证号或生产企业"
+          size="large"
+          clearable
+          @keyup.enter="handleSearch"
+        >
+          <template #append>
+            <el-button @click="handleSearch">搜索</el-button>
+          </template>
+        </el-input>
+      </div>
+
+      <div class="quick-filter">
+        <el-tag
+          v-for="tag in productFilterTags"
+          :key="tag.value"
+          :type="activeFilter === tag.value ? '' : 'info'"
+          :effect="activeFilter === tag.value ? 'dark' : 'plain'"
+          @click="activeFilter = tag.value"
+        >
+          {{ tag.label }}
+        </el-tag>
+      </div>
+
+      <div class="result-list">
+        <div
+          class="pesticide-card"
+          v-for="item in filteredProducts"
+          :key="item.id"
+          @click="openProductDetail(item)"
+        >
+          <div class="card-header">
+            <el-tag :type="item.status === 'active' ? 'success' : 'warning'" size="small">
+              {{ item.status === 'active' ? '有效' : '停用' }}
+            </el-tag>
+            <span class="reg-no">{{ item.registrationNo }}</span>
+          </div>
+          <h4 class="pesticide-name">{{ item.name }}</h4>
+          <div class="card-info">
+            <span class="info-row">
+              <el-icon><OfficeBuilding /></el-icon>
+              {{ item.companyName }}
+            </span>
+            <span class="info-row">
+              <el-icon><Document /></el-icon>
+              {{ item.content }} {{ item.formulationName }} · {{ item.toxicityName }}
+            </span>
+          </div>
+          <div class="card-tags">
+            <el-tag v-for="usage in splitText(item.usageScope)" :key="usage" size="small" type="info">
+              {{ usage }}
+            </el-tag>
+          </div>
+        </div>
+        <el-empty v-if="filteredProducts.length === 0" description="暂无查询结果" />
+      </div>
+    </template>
+
+    <el-dialog v-model="detailVisible" :title="detailTitle" width="100%" class="mobile-detail-dialog">
       <div class="detail-content" v-if="currentItem">
-        <div class="detail-header">
-          <el-tag :type="currentItem.status === 'valid' ? 'success' : 'warning'">
-            {{ currentItem.status === 'valid' ? '登记有效' : '登记过期' }}
-          </el-tag>
-        </div>
-        <h3 class="detail-name">{{ currentItem.name }}</h3>
-        <p class="detail-reg">登记证号：{{ currentItem.regNo }}</p>
+        <template v-if="detailType === 'product'">
+          <div class="detail-header">
+            <el-tag :type="currentItem.status === 'active' ? 'success' : 'warning'">
+              {{ currentItem.status === 'active' ? '登记有效' : '已停用' }}
+            </el-tag>
+          </div>
+          <h3 class="detail-name">{{ currentItem.name }}</h3>
+          <p class="detail-reg">登记证号：{{ currentItem.registrationNo }}</p>
 
-        <div class="detail-section">
-          <h4>基本信息</h4>
-          <div class="detail-row">
-            <span class="label">生产企业</span>
-            <span class="value">{{ currentItem.company }}</span>
+          <div class="detail-section">
+            <h4>基本信息</h4>
+            <div class="detail-row"><span class="label">生产企业</span><span class="value">{{ currentItem.companyName }}</span></div>
+            <div class="detail-row"><span class="label">剂型</span><span class="value">{{ currentItem.formulationName }}</span></div>
+            <div class="detail-row"><span class="label">含量规格</span><span class="value">{{ currentItem.content }}</span></div>
+            <div class="detail-row"><span class="label">毒性</span><span class="value">{{ currentItem.toxicityName }}</span></div>
           </div>
-          <div class="detail-row">
-            <span class="label">农药类型</span>
-            <span class="value">{{ currentItem.type }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">有效成分</span>
-            <span class="value">{{ currentItem.component }}</span>
-          </div>
-          <div class="detail-row">
-            <span class="label">含量规格</span>
-            <span class="value">{{ currentItem.specification }}</span>
-          </div>
-        </div>
 
-        <div class="detail-section">
-          <h4>适用范围</h4>
-          <div class="usage-list">
-            <div class="usage-item" v-for="usage in currentItem.usageDetails" :key="usage.crop">
-              <span class="crop">{{ usage.crop }}</span>
-              <span class="target">防治对象：{{ usage.target }}</span>
-              <span class="method">用药方法：{{ usage.method }}</span>
+          <div class="detail-section">
+            <h4>适用范围</h4>
+            <div class="tag-list">
+              <el-tag v-for="usage in splitText(currentItem.usageScope)" :key="usage" type="info">{{ usage }}</el-tag>
             </div>
           </div>
-        </div>
 
-        <div class="detail-section">
-          <h4>注意事项</h4>
-          <ul class="warning-list">
-            <li v-for="(warning, index) in currentItem.warnings" :key="index">{{ warning }}</li>
-          </ul>
-        </div>
-
-        <div class="detail-section">
-          <h4>登记有效期</h4>
-          <div class="valid-period">
-            <span>开始日期：{{ currentItem.validStart }}</span>
-            <span>截止日期：{{ currentItem.validEnd }}</span>
+          <div class="detail-section">
+            <h4>防治对象</h4>
+            <div class="tag-list">
+              <el-tag v-for="pest in splitText(currentItem.targetPests)" :key="pest" type="warning">{{ pest }}</el-tag>
+            </div>
           </div>
-        </div>
+        </template>
+
+        <template v-else>
+          <div class="detail-header">
+            <el-tag :type="detailType === 'production' ? 'success' : 'primary'">
+              {{ detailType === 'production' ? '生产企业' : '经营企业' }}
+            </el-tag>
+          </div>
+          <h3 class="detail-name">{{ currentItem.name }}</h3>
+          <p class="detail-reg">许可证号：{{ currentItem.licenseNo }}</p>
+
+          <el-tabs v-model="activeDetailTab" class="detail-tabs">
+            <el-tab-pane label="档案" name="archive">
+              <div class="detail-section compact">
+                <div class="detail-row"><span class="label">统一代码</span><span class="value">{{ currentItem.creditCode }}</span></div>
+                <div class="detail-row"><span class="label">法定代表人</span><span class="value">{{ currentItem.legalPerson }}</span></div>
+                <div class="detail-row"><span class="label">联系电话</span><span class="value">{{ currentItem.phone }}</span></div>
+                <div class="detail-row"><span class="label">所在城市</span><span class="value">{{ getCityName(currentItem.address) }}</span></div>
+                <div class="detail-row"><span class="label">详细地址</span><span class="value">{{ currentItem.address }}</span></div>
+                <div class="detail-row"><span class="label">许可到期</span><span class="value">{{ currentItem.licenseExpiry }}</span></div>
+                <div class="detail-row"><span class="label">建档时间</span><span class="value">{{ currentItem.createTime }}</span></div>
+              </div>
+            </el-tab-pane>
+
+            <el-tab-pane label="指标" name="metrics">
+              <div class="detail-metric-grid">
+                <div v-for="metric in currentCompanyMetrics" :key="metric.label" class="metric-card small">
+                  <span class="metric-label">{{ metric.label }}</span>
+                  <strong>{{ metric.value }}</strong>
+                  <span class="metric-unit">{{ metric.unit }}</span>
+                </div>
+              </div>
+            </el-tab-pane>
+
+            <el-tab-pane :label="detailType === 'production' ? '产品' : '流通记录'" name="records">
+              <div v-if="detailType === 'production'" class="record-list">
+                <div class="record-card" v-for="product in getCompanyProducts(currentItem.id)" :key="product.id">
+                  <div class="record-title">{{ product.name }}</div>
+                  <div class="record-line">登记证号：{{ product.registrationNo }}</div>
+                  <div class="record-line">{{ product.content }} {{ product.formulationName }} · {{ product.toxicityName }}</div>
+                  <div class="tag-list light">
+                    <el-tag v-for="usage in splitText(product.usageScope)" :key="usage" size="small" type="info">{{ usage }}</el-tag>
+                  </div>
+                </div>
+                <el-empty v-if="getCompanyProducts(currentItem.id).length === 0" description="暂无产品" />
+              </div>
+
+              <div v-else class="record-list">
+                <div class="record-card" v-for="flow in getBusinessFlows(currentItem.id)" :key="flow.id">
+                  <div class="record-head">
+                    <span class="record-title">{{ flow.productName }}</span>
+                    <el-tag :type="flow.flowType === 'in' ? 'success' : 'warning'" size="small">{{ flow.flowTypeName }}</el-tag>
+                  </div>
+                  <div class="record-line">登记证号：{{ flow.registrationNo }}</div>
+                  <div class="record-line">批号：{{ flow.batchNo }}</div>
+                  <div class="record-line">数量：{{ flow.quantity }}{{ flow.unit }} · 日期：{{ flow.transactionDate }}</div>
+                  <div class="record-line">{{ flow.flowType === 'in' ? `来源：${flow.source}` : `购买方：${flow.buyer}` }}</div>
+                </div>
+                <el-empty v-if="getBusinessFlows(currentItem.id).length === 0" description="暂无流通记录" />
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </template>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { ArrowLeft, Document, OfficeBuilding } from '@element-plus/icons-vue'
+import {
+  businessCompanies,
+  businessFlows,
+  pesticideProducts,
+  productionBatches,
+  productionCompanies
+} from '@/data/pesticide'
 
 const router = useRouter()
 const route = useRoute()
 
 const searchKeyword = ref('')
 const activeFilter = ref('all')
+const selectedCity = ref('all')
+const activeCompanyTab = ref('production')
 const detailVisible = ref(false)
 const currentItem = ref(null)
+const detailType = ref('product')
+const activeDetailTab = ref('archive')
 
-const filterTags = [
+const productFilterTags = [
   { label: '全部', value: 'all' },
-  { label: '杀虫剂', value: 'insecticide' },
-  { label: '杀菌剂', value: 'fungicide' },
-  { label: '除草剂', value: 'herbicide' },
-  { label: '植物生长调节剂', value: 'growth' }
+  { label: '低毒', value: 'low' },
+  { label: '中等毒', value: 'medium' },
+  { label: '高毒', value: 'high' },
+  { label: '可湿性粉剂', value: 'WP' },
+  { label: '悬浮剂', value: 'SC' },
+  { label: '乳油', value: 'EC' }
 ]
 
-const pesticideData = ref([
-  {
-    id: 1,
-    name: '吡虫啉',
-    regNo: 'PD20080523',
-    company: '江苏某农药化工有限公司',
-    type: '杀虫剂',
-    status: 'valid',
-    component: '吡虫啉',
-    specification: '10%可湿性粉剂',
-    usages: ['水稻', '小麦', '玉米'],
-    validStart: '2008-05-23',
-    validEnd: '2025-05-23',
-    usageDetails: [
-      { crop: '水稻', target: '稻飞虱', method: '喷雾，每亩用量20-30克' },
-      { crop: '小麦', target: '蚜虫', method: '喷雾，每亩用量15-20克' }
-    ],
-    warnings: [
-      '不能与碱性农药混用',
-      '施药时注意防护，避免接触皮肤',
-      '收获前7天停止用药',
-      '对蜜蜂有毒，开花期禁止使用'
-    ]
-  },
-  {
-    id: 2,
-    name: '多菌灵',
-    regNo: 'PD20091234',
-    company: '山东某农药有限公司',
-    type: '杀菌剂',
-    status: 'valid',
-    component: '多菌灵',
-    specification: '50%可湿性粉剂',
-    usages: ['果树', '蔬菜', '粮食作物'],
-    validStart: '2009-12-01',
-    validEnd: '2027-12-01',
-    usageDetails: [
-      { crop: '果树', target: '炭疽病', method: '喷雾，稀释500-800倍' },
-      { crop: '蔬菜', target: '灰霉病', method: '喷雾，稀释600倍' }
-    ],
-    warnings: [
-      '可与一般杀菌剂混用',
-      '安全间隔期3-5天',
-      '不宜长期单一使用'
-    ]
-  },
-  {
-    id: 3,
-    name: '草甘膦',
-    regNo: 'PD20104567',
-    company: '浙江某化工集团',
-    type: '除草剂',
-    status: 'valid',
-    component: '草甘膦',
-    specification: '41%水剂',
-    usages: ['果园', '茶园', '农田'],
-    validStart: '2010-06-15',
-    validEnd: '2024-06-15',
-    usageDetails: [
-      { crop: '果园', target: '杂草', method: '喷雾，每亩用量150-200毫升' }
-    ],
-    warnings: [
-      '避免药液飘移到作物上',
-      '施药后6小时内遇雨应补喷',
-      '对多年生杂草效果好'
-    ]
-  },
-  {
-    id: 4,
-    name: '乙烯利',
-    regNo: 'PD20086789',
-    company: '河北某农药厂',
-    type: '植物生长调节剂',
-    status: 'valid',
-    component: '乙烯利',
-    specification: '40%水剂',
-    usages: ['棉花', '番茄', '香蕉'],
-    validStart: '2008-03-01',
-    validEnd: '2026-03-01',
-    usageDetails: [
-      { crop: '棉花', target: '催熟', method: '喷雾，每亩用量100毫升' }
-    ],
-    warnings: [
-      '不能与碱性物质混用',
-      '气温20℃以上使用效果好',
-      '使用后要及时清洗容器'
-    ]
-  },
-  {
-    id: 5,
-    name: '敌敌畏',
-    regNo: 'PD20051234',
-    company: '某农药化工有限公司',
-    type: '杀虫剂',
-    status: 'expired',
-    component: '敌敌畏',
-    specification: '80%乳油',
-    usages: ['蔬菜', '果树'],
-    validStart: '2005-01-01',
-    validEnd: '2023-01-01',
-    usageDetails: [],
-    warnings: ['该产品登记已过期，请勿购买使用']
-  }
+const isRegulatoryEntry = computed(() => route.params.entry === 'wanzhengtong')
+const pageTitle = computed(() => (isRegulatoryEntry.value ? '农药监管' : '农药查询'))
+const detailTitle = computed(() => {
+  if (detailType.value === 'product') return '农药详情'
+  return detailType.value === 'production' ? '生产企业详情' : '经营企业详情'
+})
+
+const cityOptions = computed(() => {
+  const cities = [...productionCompanies, ...businessCompanies].map(item => getCityName(item.address)).filter(Boolean)
+  return [...new Set(cities)]
+})
+
+const filteredProductionCompanies = computed(() => filterCompanies(productionCompanies))
+const filteredBusinessCompanies = computed(() => filterCompanies(businessCompanies))
+
+const filteredProducts = computed(() => {
+  const keyword = searchKeyword.value.trim().toLowerCase()
+  return pesticideProducts.filter(item => {
+    const matchesKeyword = !keyword || [
+      item.name,
+      item.registrationNo,
+      item.companyName,
+      item.usageScope,
+      item.targetPests
+    ].some(value => String(value || '').toLowerCase().includes(keyword))
+    const matchesFilter = activeFilter.value === 'all' || item.toxicity === activeFilter.value || item.formulation === activeFilter.value
+    return matchesKeyword && matchesFilter
+  })
+})
+
+const scopedProductionCompanyIds = computed(() => new Set(filteredProductionCompanies.value.map(item => item.id)))
+const scopedBusinessCompanyIds = computed(() => new Set(filteredBusinessCompanies.value.map(item => item.id)))
+
+const scopedProducts = computed(() => pesticideProducts.filter(item => scopedProductionCompanyIds.value.has(item.companyId)))
+const scopedBatches = computed(() => productionBatches.filter(item => scopedProductionCompanyIds.value.has(item.companyId)))
+const scopedFlows = computed(() => businessFlows.filter(item => scopedBusinessCompanyIds.value.has(item.companyId)))
+
+const regulatoryMetrics = computed(() => [
+  { label: '生产企业', value: filteredProductionCompanies.value.length, unit: '家' },
+  { label: '经营企业', value: filteredBusinessCompanies.value.length, unit: '家' },
+  { label: '累计生产', value: formatNumber(sumBy(scopedBatches.value, 'quantity')), unit: '箱' },
+  { label: '销售总量', value: formatNumber(getSalesTotal(scopedBatches.value) + sumBy(scopedFlows.value.filter(item => item.flowType === 'out'), 'quantity')), unit: '箱' },
+  { label: '有效产品', value: scopedProducts.value.filter(item => item.status === 'active').length, unit: '个' }
 ])
 
-const filteredResults = computed(() => {
-  let results = pesticideData.value
-
-  if (searchKeyword.value) {
-    results = results.filter(item =>
-      item.name.includes(searchKeyword.value) ||
-      item.regNo.includes(searchKeyword.value)
-    )
+const currentCompanyMetrics = computed(() => {
+  if (!currentItem.value) return []
+  if (detailType.value === 'production') {
+    const products = getCompanyProducts(currentItem.value.id)
+    const batches = getProductionBatches(currentItem.value.id)
+    return [
+      { label: '有效产品', value: products.filter(item => item.status === 'active').length, unit: '个' },
+      { label: '生产批次', value: batches.length, unit: '批' },
+      { label: '累计生产', value: formatNumber(sumBy(batches, 'quantity')), unit: '箱' },
+      { label: '累计销售', value: formatNumber(getSalesTotal(batches)), unit: '箱' }
+    ]
   }
-
-  if (activeFilter.value !== 'all') {
-    results = results.filter(item => {
-      const typeMap = {
-        insecticide: '杀虫剂',
-        fungicide: '杀菌剂',
-        herbicide: '除草剂',
-        growth: '植物生长调节剂'
-      }
-      return item.type === typeMap[activeFilter.value]
-    })
-  }
-
-  return results
+  const flows = getBusinessFlows(currentItem.value.id)
+  return [
+    { label: '流通记录', value: flows.length, unit: '条' },
+    { label: '入库总量', value: formatNumber(sumBy(flows.filter(item => item.flowType === 'in'), 'quantity')), unit: '箱' },
+    { label: '出库总量', value: formatNumber(sumBy(flows.filter(item => item.flowType === 'out'), 'quantity')), unit: '箱' },
+    { label: '经营产品', value: new Set(flows.map(item => item.productId)).size, unit: '个' }
+  ]
 })
 
 const goBack = () => router.back()
+const handleSearch = () => {}
 
-const handleSearch = () => {
-  // 搜索已在 computed 中处理
+const filterCompanies = (companies) => {
+  const keyword = searchKeyword.value.trim().toLowerCase()
+  return companies.filter(item => {
+    const matchesCity = selectedCity.value === 'all' || getCityName(item.address) === selectedCity.value
+    const matchesKeyword = !keyword || [
+      item.name,
+      item.licenseNo,
+      item.creditCode,
+      item.address,
+      item.legalPerson
+    ].some(value => String(value || '').toLowerCase().includes(keyword))
+    return matchesCity && matchesKeyword
+  })
 }
 
-const handleDetail = (item) => {
+const openProductDetail = (item) => {
   currentItem.value = item
+  detailType.value = 'product'
   detailVisible.value = true
 }
+
+const openCompanyDetail = (item, type) => {
+  currentItem.value = item
+  detailType.value = type
+  activeDetailTab.value = 'archive'
+  detailVisible.value = true
+}
+
+const getCityName = (address = '') => {
+  const matched = String(address).match(/([^省市区县镇路号]+市)/)
+  return matched ? matched[1] : '未知城市'
+}
+
+const getCompanyProducts = (companyId) => pesticideProducts.filter(item => item.companyId === companyId)
+const getProductionBatches = (companyId) => productionBatches.filter(item => item.companyId === companyId)
+const getBusinessFlows = (companyId) => businessFlows.filter(item => item.companyId === companyId)
+const getProductionTotal = (companyId) => sumBy(getProductionBatches(companyId), 'quantity')
+const getBusinessInTotal = (companyId) => sumBy(getBusinessFlows(companyId).filter(item => item.flowType === 'in'), 'quantity')
+const getBusinessOutTotal = (companyId) => sumBy(getBusinessFlows(companyId).filter(item => item.flowType === 'out'), 'quantity')
+
+const getSalesTotal = (batches) => batches.reduce((total, batch) => {
+  const batchSales = Array.isArray(batch.sales) ? batch.sales.reduce((sum, sale) => sum + Number(sale.quantity || 0), 0) : 0
+  return total + batchSales
+}, 0)
+
+const sumBy = (list, key) => list.reduce((total, item) => total + Number(item[key] || 0), 0)
+const formatNumber = (value) => Number(value || 0).toLocaleString('zh-CN')
+const splitText = (value = '') => String(value).split(/[、,，]/).map(item => item.trim()).filter(Boolean)
 </script>
 
 <style scoped>
@@ -300,6 +423,9 @@ const handleDetail = (item) => {
   align-items: center;
   gap: 16px;
   color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .page-header h3 {
@@ -313,56 +439,120 @@ const handleDetail = (item) => {
   cursor: pointer;
 }
 
+.regulatory-hero {
+  margin: 12px 16px 0;
+  padding: 16px;
+  color: #fff;
+  background: linear-gradient(135deg, #1a3a5c, #28547d);
+  border-radius: 4px;
+}
+
+.hero-title {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.hero-subtitle {
+  font-size: 12px;
+  opacity: 0.86;
+}
+
+.toolbar-section,
 .search-section {
   padding: 16px;
   background: #fff;
 }
 
-.quick-filter {
+.toolbar-section {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.city-select {
+  width: 100%;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   padding: 12px 16px;
+}
+
+.metric-card {
   background: #fff;
-  overflow-x: auto;
-  flex-wrap: wrap;
+  border-radius: 4px;
+  padding: 13px;
+  box-shadow: 0 1px 6px rgba(26, 58, 92, 0.08);
 }
 
-.quick-filter::-webkit-scrollbar {
-  display: none;
+.metric-card strong {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 20px;
+  color: #1a3a5c;
 }
 
-.quick-filter .el-tag {
-  cursor: pointer;
+.metric-card.small strong {
+  font-size: 18px;
+}
+
+.metric-label,
+.metric-unit {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.company-tabs {
+  padding: 0 16px 16px;
+}
+
+.company-list,
+.result-list,
+.record-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .result-list {
   padding: 12px 16px;
 }
 
-.pesticide-card {
+.company-card,
+.pesticide-card,
+.record-card {
   background: #fff;
   border-radius: 4px;
   padding: 16px;
-  margin-bottom: 12px;
   cursor: pointer;
+  box-shadow: 0 1px 6px rgba(31, 41, 55, 0.06);
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.reg-no {
-  font-size: 12px;
-  color: #9ca3af;
-}
-
+.company-card h4,
 .pesticide-name {
   margin: 0 0 12px;
   font-size: 16px;
   color: #1f2937;
+  line-height: 1.4;
+}
+
+.card-header,
+.record-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  gap: 10px;
+}
+
+.city-name,
+.reg-no {
+  font-size: 12px;
+  color: #9ca3af;
 }
 
 .card-info {
@@ -378,16 +568,48 @@ const handleDetail = (item) => {
   gap: 6px;
   font-size: 13px;
   color: #6b7280;
+  line-height: 1.5;
 }
 
-.card-tags {
+.mini-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mini-metrics span {
+  padding: 4px 8px;
+  background: #f0f5fa;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #1a3a5c;
+}
+
+.quick-filter,
+.card-tags,
+.tag-list {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
+.quick-filter {
+  padding: 12px 16px;
+  background: #fff;
+  overflow-x: auto;
+}
+
+.quick-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-filter .el-tag {
+  cursor: pointer;
+}
+
 .detail-content {
-  padding: 8px;
+  padding: 4px 0 12px;
 }
 
 .detail-header {
@@ -398,6 +620,7 @@ const handleDetail = (item) => {
   margin: 0;
   font-size: 18px;
   color: #1f2937;
+  line-height: 1.4;
 }
 
 .detail-reg {
@@ -410,6 +633,10 @@ const handleDetail = (item) => {
   margin-top: 20px;
 }
 
+.detail-section.compact {
+  margin-top: 4px;
+}
+
 .detail-section h4 {
   margin: 0 0 12px;
   font-size: 14px;
@@ -419,62 +646,74 @@ const handleDetail = (item) => {
 
 .detail-row {
   display: flex;
-  padding: 8px 0;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .detail-row .label {
-  width: 80px;
+  width: 84px;
+  flex: 0 0 84px;
   font-size: 13px;
   color: #6b7280;
 }
 
 .detail-row .value {
+  flex: 1;
   font-size: 13px;
   color: #374151;
+  line-height: 1.5;
+  word-break: break-all;
 }
 
-.usage-list {
-  display: flex;
-  flex-direction: column;
+.detail-tabs {
+  margin-top: 16px;
+}
+
+.detail-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.usage-item {
-  background: #f9fafb;
-  padding: 12px;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.crop {
-  font-size: 14px;
-  font-weight: 500;
+.record-title {
+  font-size: 15px;
+  font-weight: 600;
   color: #1f2937;
 }
 
-.target, .method {
-  font-size: 12px;
+.record-line {
+  margin-top: 8px;
+  font-size: 13px;
   color: #6b7280;
+  line-height: 1.45;
 }
 
-.warning-list {
+.tag-list.light {
+  margin-top: 10px;
+}
+
+:deep(.el-dialog) {
+  max-width: 100vw;
   margin: 0;
-  padding-left: 16px;
+  border-radius: 4px 4px 0 0;
 }
 
-.warning-list li {
-  font-size: 13px;
-  color: #6b7280;
-  line-height: 1.6;
-  margin-bottom: 6px;
+:deep(.mobile-detail-dialog) {
+  margin-top: 8vh;
 }
 
-.valid-period {
-  display: flex;
-  gap: 16px;
-  font-size: 13px;
-  color: #6b7280;
+:deep(.el-dialog__body) {
+  max-height: 78vh;
+  overflow-y: auto;
+}
+
+:deep(.el-tabs__item.is-active),
+:deep(.el-tabs__active-bar) {
+  color: #1a3a5c;
+}
+
+:deep(.el-tabs__active-bar) {
+  background-color: #1a3a5c;
 }
 </style>
