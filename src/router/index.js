@@ -246,6 +246,12 @@ const routes = [
     name: 'MobileFarmingAdvice',
     component: () => import('@/views/mobile/MobileFarmingAdvice.vue'),
     meta: { requiresAuth: true, isMobile: true }
+  },
+  {
+    path: '/mobile/weather/:entry',
+    name: 'MobileWeatherWarning',
+    component: () => import('@/views/mobile/MobileWeatherWarning.vue'),
+    meta: { requiresAuth: true, isMobile: true }
   }
 ]
 

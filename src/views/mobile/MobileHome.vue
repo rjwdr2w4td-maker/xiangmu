@@ -182,10 +182,11 @@ const modules = computed(() => {
     return [
       { id: 1, name: '种植计划', icon: 'Document', color: '#3b82f6', route: 'MobileTaskList' },
       { id: 2, name: '种植备案', icon: 'Crop', color: '#10b981', route: 'MobilePlantingRecord' },
-      { id: 3, name: '收储申报', icon: 'Box', color: '#f59e0b', route: 'MobileStorageDeclare' },
-      { id: 4, name: '农药台账', icon: 'FirstAidKit', color: '#ef4444', route: 'MobilePesticideQuery' },
-      { id: 5, name: '补贴申请', icon: 'Wallet', color: '#1a3a5c', route: 'MobileSubsidy' },
-      { id: 6, name: '灾情上报', icon: 'Warning', color: '#ef4444', route: 'MobileIssueReport' }
+      { id: 3, name: '气象预警', icon: 'Cloudy', color: '#f59e0b', route: 'MobileWeatherWarning', badge: '2' },
+      { id: 4, name: '农事建议', icon: 'Calendar', color: '#10b981', route: 'MobileFarmingAdvice' },
+      { id: 5, name: '农药台账', icon: 'FirstAidKit', color: '#ef4444', route: 'MobilePesticideQuery' },
+      { id: 6, name: '补贴申请', icon: 'Wallet', color: '#1a3a5c', route: 'MobileSubsidy' },
+      { id: 7, name: '灾情上报', icon: 'Warning', color: '#ef4444', route: 'MobileIssueReport' }
     ]
   }
   return [
