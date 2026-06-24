@@ -5,9 +5,9 @@
         <div class="card-header">
           <span class="title">变化图斑库</span>
           <div class="header-buttons">
-            <el-button @click="resetPlots">
+            <el-button @click="fetchLatestData">
               <el-icon><Refresh /></el-icon>
-              重置数据
+              获取最新遥感数据
             </el-button>
             <el-button type="primary" @click="handleAutoDispatch">
               <el-icon><Position /></el-icon>
@@ -340,6 +340,101 @@ const confirmDispatch = () => {
 
   dispatchDialogVisible.value = false
   ElMessage.success(`已下发至${county}县农业农村局`)
+}
+
+const fetchLatestData = () => {
+  const cities = [
+    { name: '合肥市', counties: ['长丰县', '肥东县', '肥西县', '庐江县', '巢湖市'], coord: [117.27, 31.86] },
+    { name: '芜湖市', counties: ['镜湖区', '弋江区', '鸠江区', '繁昌区', '南陵县'], coord: [118.38, 31.33] },
+    { name: '蚌埠市', counties: ['龙子湖区', '蚌山区', '禹会区', '怀远县', '五河县'], coord: [117.36, 32.94] },
+    { name: '阜阳市', counties: ['颍州区', '颍东区', '颍泉区', '临泉县', '太和县'], coord: [115.82, 32.89] },
+    { name: '安庆市', counties: ['迎江区', '大观区', '宜秀区', '怀宁县', '太湖县'], coord: [117.05, 30.53] }
+  ]
+  const problemTypes = [
+    { type: 'fallow', name: '疑似撂荒' },
+    { type: 'not_plant', name: '种植计划未落实' },
+    { type: 'illegal_use', name: '涉嫌违规用地' }
+  ]
+  const riskLevels = ['high', 'medium', 'low']
+  const townNames = ['城关镇', '开发区', '农业园区', '示范园区', '产业园区']
+  const villageNames = ['中心村', '东村', '西村', '南村', '北村']
+
+  const count = Math.floor(Math.random() * 3) + 2
+  const newPlots = []
+
+  for (let i = 0; i < count; i++) {
+    const city = cities[Math.floor(Math.random() * cities.length)]
+    const county = city.counties[Math.floor(Math.random() * city.counties.length)]
+    const problem = problemTypes[Math.floor(Math.random() * problemTypes.length)]
+    const risk = riskLevels[Math.floor(Math.random() * riskLevels.length)]
+    const town = townNames[Math.floor(Math.random() * townNames.length)]
+    const village = villageNames[Math.floor(Math.random() * villageNames.length)]
+
+    const id = `PLOT${Date.now()}${String(i).padStart(2, '0')}`
+    const plotNo = `AH-2026-${String(Math.floor(Math.random() * 90000) + 10000)}`
+
+    newPlots.push({
+      id,
+      plotNo,
+      location: {
+        province: '安徽省',
+        city: city.name,
+        county,
+        town,
+        village,
+        coordinate: [
+          city.coord[0] + (Math.random() - 0.5) * 0.5,
+          city.coord[1] + (Math.random() - 0.5) * 0.5
+        ]
+      },
+      problemType: problem.type,
+      problemTypeName: problem.name,
+      area: Math.floor(Math.random() * 200) + 30,
+      riskLevel: risk,
+      riskReason: getRiskReason(problem.type, risk),
+      discoveryTime: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      beforeImage: `https://picsum.photos/seed/before${Date.now()}${i}/800/600`,
+      afterImage: `https://picsum.photos/seed/after${Date.now()}${i}/800/600`,
+      status: 'pending_check',
+      statusName: '待核查',
+      assignee: `${county}农业农村局`,
+      assignTime: new Date().toISOString().slice(0, 16).replace('T', ' '),
+      deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16).replace('T', ' '),
+      flowLogs: [
+        {
+          time: new Date().toISOString().slice(0, 16).replace('T', ' '),
+          action: `遥感识别发现${problem.name}图斑`,
+          operator: '系统'
+        }
+      ]
+    })
+  }
+
+  plots.value = [...newPlots, ...plots.value]
+  savePlots(plots.value)
+
+  ElMessage.success(`获取最新遥感数据成功，新增 ${count} 条待核查图斑`)
+}
+
+const getRiskReason = (type, risk) => {
+  const reasons = {
+    fallow: {
+      high: '位于永久基本农田核心区，面积超过100亩，连续两季未耕种',
+      medium: '位于粮食生产功能区，存在季节性撂荒现象',
+      low: '位于一般耕地，小面积闲置'
+    },
+    not_plant: {
+      high: '位于高标准农田项目区，春播计划面积未达标，影响粮食安全',
+      medium: '一般耕地，种植计划落实进度滞后',
+      low: '小面积耕地，种植结构调整未及时上报'
+    },
+    illegal_use: {
+      high: '基本农田上疑似建设非农设施，破坏耕作层',
+      medium: '耕地内违规种植苗木或挖塘养鱼',
+      low: '耕地边缘存在轻微违规占用'
+    }
+  }
+  return reasons[type]?.[risk] || '遥感识别发现异常'
 }
 </script>
 
