@@ -115,10 +115,11 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import L from 'leaflet'
 import dayjs from 'dayjs'
-import { changePlots } from '@/data/security'
+import { getPlots } from '@/data/plotStore'
 
 const mapRef = ref(null)
 const stageFilter = ref('')
+const plots = ref([])
 let map = null
 let markers = []
 
@@ -144,7 +145,7 @@ const getStageName = (stage) => {
 }
 
 const plotsWithStage = computed(() => {
-  return changePlots.map(plot => {
+  return plots.value.map(plot => {
     const deadline = dayjs(plot.deadline)
     const now = dayjs()
     const remainingDays = deadline.diff(now, 'day')
@@ -249,16 +250,16 @@ const addMarkers = () => {
       <div style="padding: 8px; min-width: 180px;">
         <div style="font-weight: bold; margin-bottom: 8px; color: #1f2937;">${plot.plotNo}</div>
         <div style="font-size: 12px; color: #4b5563; margin-bottom: 4px;">
-          <strong>位置：</strong>${plot.location.city} ${plot.location.county}
+          <strong>位置:</strong>${plot.location.city} ${plot.location.county}
         </div>
         <div style="font-size: 12px; color: #4b5563; margin-bottom: 4px;">
-          <strong>阶段：</strong>${plot.stageName}
+          <strong>阶段:</strong>${plot.stageName}
         </div>
         <div style="font-size: 12px; color: #4b5563; margin-bottom: 4px;">
-          <strong>责任人：</strong>${plot.assignee}
+          <strong>责任人:</strong>${plot.assignee}
         </div>
         <div style="font-size: 12px; color: ${plot.remainingDays <= 0 ? '#ef4444' : '#4b5563'};">
-          <strong>剩余时限：</strong>${plot.remainingDays <= 0 ? '已超期' : plot.remainingDays + '天'}
+          <strong>剩余时限:</strong>${plot.remainingDays <= 0 ? '已超期' : plot.remainingDays + '天'}
         </div>
       </div>
     `)
@@ -277,6 +278,7 @@ const handleRowClick = (row) => {
 }
 
 onMounted(() => {
+  plots.value = getPlots()
   initMap()
 })
 

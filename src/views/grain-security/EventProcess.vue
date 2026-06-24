@@ -150,26 +150,31 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { changePlots } from '@/data/security'
+import { getPlots, savePlots } from '@/data/plotStore'
 
 const activeTab = ref('pending')
 const selectedPlot = ref(null)
 const approveDialogVisible = ref(false)
 const rejectDialogVisible = ref(false)
+const plots = ref([])
 
 const approveForm = reactive({
   rectifyMeasure: '',
   rectifyDeadline: ''
 })
 
+onMounted(() => {
+  plots.value = getPlots()
+})
+
 const pendingPlots = computed(() => {
-  return changePlots.filter(p => p.status === 'reported')
+  return plots.value.filter(p => p.status === 'reported')
 })
 
 const reviewedPlots = computed(() => {
-  return changePlots.filter(p => p.reviewResult && (p.status === 'rectifying' || p.status === 'checking'))
+  return plots.value.filter(p => p.reviewResult && (p.status === 'rectifying' || p.status === 'checking'))
 })
 
 const getStatusTag = (status) => {
@@ -204,13 +209,19 @@ const handleSubmitApprove = () => {
   }
 
   if (selectedPlot.value) {
-    selectedPlot.value.status = 'rectifying'
-    selectedPlot.value.statusName = '整改中'
-    selectedPlot.value.reviewResult = 'approved'
-    selectedPlot.value.reviewTime = new Date().toISOString().slice(0, 16).replace('T', ' ')
-    selectedPlot.value.reviewer = '市级审核员'
-    selectedPlot.value.rectifyMeasure = approveForm.rectifyMeasure
-    selectedPlot.value.rectifyDeadline = approveForm.rectifyDeadline
+    const plot = plots.value.find(p => p.id === selectedPlot.value.id)
+    if (plot) {
+      plot.status = 'rectifying'
+      plot.statusName = '整改中'
+      plot.rectifyMeasure = approveForm.rectifyMeasure
+      plot.rectifyDeadline = approveForm.rectifyDeadline
+      plot.reviewResult = 'approved'
+      plot.reviewTime = new Date().toISOString().slice(0, 16).replace('T', ' ')
+      plot.reviewer = '审核人员'
+      if (!plot.flowLogs) plot.flowLogs = []
+      plot.flowLogs.push({ time: plot.reviewTime, action: '审核通过，进入整改阶段', operator: '审核人员' })
+      savePlots(plots.value)
+    }
   }
 
   approveDialogVisible.value = false
@@ -224,11 +235,17 @@ const handleReject = () => {
 
 const handleSubmitReject = () => {
   if (selectedPlot.value) {
-    selectedPlot.value.status = 'checking'
-    selectedPlot.value.statusName = '核查中'
-    selectedPlot.value.reviewResult = 'rejected'
-    selectedPlot.value.reviewTime = new Date().toISOString().slice(0, 16).replace('T', ' ')
-    selectedPlot.value.reviewer = '市级审核员'
+    const plot = plots.value.find(p => p.id === selectedPlot.value.id)
+    if (plot) {
+      plot.status = 'checking'
+      plot.statusName = '核查中'
+      plot.reviewResult = 'rejected'
+      plot.reviewTime = new Date().toISOString().slice(0, 16).replace('T', ' ')
+      plot.reviewer = '审核人员'
+      if (!plot.flowLogs) plot.flowLogs = []
+      plot.flowLogs.push({ time: plot.reviewTime, action: '打回重核，需重新核查', operator: '审核人员' })
+      savePlots(plots.value)
+    }
   }
 
   rejectDialogVisible.value = false

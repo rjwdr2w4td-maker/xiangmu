@@ -151,6 +151,7 @@
 import { reactive, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { getPlots, savePlots } from '@/data/plotStore'
 
 const router = useRouter()
 const route = useRoute()
@@ -277,6 +278,33 @@ const handleSubmit = () => {
     cancelButtonText: '取消',
     type: 'info'
   }).then(() => {
+    if (form.plotId) {
+      const plots = getPlots()
+      const plot = plots.find(p => p.plotNo === form.plotId || p.id === form.plotId)
+      if (plot) {
+        plot.status = 'pending_review'
+        plot.statusName = '待审核'
+        plot.checkResult = {
+          checker: form.reporter,
+          checkTime: new Date().toISOString().slice(0, 16).replace('T', ' '),
+          result: form.checkResult,
+          resultName: form.checkResult === 'confirmed' ? '问题属实' : (form.checkResult === 'unconfirmed' ? '问题不属实' : '需要进一步核实'),
+          actualArea: form.area,
+          description: form.description,
+          photos: [...form.photos],
+          videos: form.videos.length > 0 ? form.videos : undefined,
+          gpsLocation: form.gpsCoords
+        }
+        if (!plot.flowLogs) plot.flowLogs = []
+        plot.flowLogs.push({
+          time: plot.checkResult.checkTime,
+          action: '移动端核查完成，结果已上报',
+          operator: form.reporter
+        })
+        savePlots(plots)
+      }
+    }
+
     const record = {
       id: `PHOTO${Date.now()}`,
       plotId: form.plotId,

@@ -4,10 +4,16 @@
       <template #header>
         <div class="card-header">
           <span class="title">变化图斑库</span>
-          <el-button type="primary" @click="handleAutoDispatch">
-            <el-icon><Position /></el-icon>
-            自动下发
-          </el-button>
+          <div class="header-buttons">
+            <el-button @click="resetPlots">
+              <el-icon><Refresh /></el-icon>
+              重置数据
+            </el-button>
+            <el-button type="primary" @click="handleAutoDispatch">
+              <el-icon><Position /></el-icon>
+              自动下发
+            </el-button>
+          </div>
         </div>
       </template>
 
@@ -190,9 +196,9 @@
 </template>
 
 <script setup>
-import { ref, computed, reactive } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { changePlots } from '@/data/security'
+import { getPlots, savePlots } from '@/data/plotStore'
 
 const searchKeyword = ref('')
 const filterStatus = ref('')
@@ -205,7 +211,11 @@ const pagination = reactive({
   pageSize: 10
 })
 
-const plots = ref([...changePlots])
+const plots = ref([])
+
+onMounted(() => {
+  plots.value = getPlots()
+})
 
 const sortedPlots = computed(() => {
   const riskOrder = { high: 0, medium: 1, low: 2 }
@@ -315,10 +325,18 @@ const confirmDispatch = () => {
   }
 
   const county = pendingPlots[0].location.county
+  const now = new Date().toISOString().slice(0, 16).replace('T', ' ')
   pendingPlots.forEach(plot => {
     plot.status = 'checking'
     plot.statusName = '核查中'
+    if (!plot.flowLogs) plot.flowLogs = []
+    plot.flowLogs.push({
+      time: now,
+      action: '任务下发，状态变更为核查中',
+      operator: '省农业农村厅'
+    })
   })
+  savePlots(plots.value)
 
   dispatchDialogVisible.value = false
   ElMessage.success(`已下发至${county}县农业农村局`)
@@ -356,6 +374,11 @@ const confirmDispatch = () => {
   font-size: 18px;
   font-weight: 600;
   color: #303133;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 12px;
 }
 
 .filter-bar {
