@@ -170,7 +170,7 @@ onMounted(() => {
 })
 
 const pendingPlots = computed(() => {
-  return plots.value.filter(p => p.status === 'reported')
+  return plots.value.filter(p => p.status === 'pending_review' || p.status === 'reported')
 })
 
 const reviewedPlots = computed(() => {
