@@ -113,6 +113,29 @@
         </el-descriptions-item>
       </el-descriptions>
 
+      <el-divider content-position="left">完整调度流程</el-divider>
+      <el-timeline>
+        <el-timeline-item
+          v-for="(step, index) in getDispatchTimeline(currentRecord)"
+          :key="index"
+          :timestamp="step.time"
+          :type="step.status === 'completed' ? 'success' : step.status === 'processing' ? 'primary' : 'info'"
+          :hollow="step.status !== 'completed'"
+        >
+          <div class="timeline-header">
+            <span class="timeline-title">{{ step.title }}</span>
+            <el-tag :type="step.status === 'completed' ? 'success' : step.status === 'processing' ? '' : 'info'" size="small">
+              {{ step.statusText }}
+            </el-tag>
+          </div>
+          <div class="timeline-info">
+            <span class="timeline-operator">操作人：{{ step.operator }}</span>
+            <span class="timeline-dept">部门：{{ step.department }}</span>
+          </div>
+          <div class="timeline-content">{{ step.description }}</div>
+        </el-timeline-item>
+      </el-timeline>
+
       <el-divider content-position="left">调度流程信息</el-divider>
       <el-timeline v-if="currentRecord.dispatchFlows?.length">
         <el-timeline-item
@@ -268,6 +291,102 @@ const getLevelName = level => level === 'high' ? '高风险' : '中风险'
 const getStatusName = status => status === 'resolved' ? '已完成' : '处置中'
 const formatMoney = value => (value / 10000).toFixed(0)
 
+const getDispatchTimeline = record => {
+  if (!record || !record.occurTime) return []
+  
+  const baseTime = new Date(record.occurTime)
+  const isResolved = record.status === 'resolved'
+  
+  const addMinutes = (date, minutes) => {
+    const result = new Date(date)
+    result.setMinutes(result.getMinutes() + minutes)
+    return result
+  }
+  
+  const formatTime = date => {
+    return date.toLocaleString('zh-CN', { 
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false 
+    }).replace(/\//g, '-')
+  }
+  
+  const steps = [
+    {
+      title: '灾情发现',
+      time: formatTime(baseTime),
+      operator: record.reporter || '村级信息员',
+      department: record.region?.name || '事发地村委会',
+      description: `在${record.region?.name || '事发地'}发现${record.typeName || '灾情'}，受灾面积约${record.affectedArea || 0}亩，立即启动上报程序。`,
+      status: 'completed',
+      statusText: '已完成'
+    },
+    {
+      title: '核实确认',
+      time: formatTime(addMinutes(baseTime, 45)),
+      operator: '张伟',
+      department: '县农业农村局',
+      description: `经现场核实，确认${record.typeName || '灾情'}属实，受灾面积${record.affectedArea || 0}亩，成灾面积${record.disasterArea || 0}亩，预估损失${formatMoney(record.estimatedLoss || 0)}万元，建议启动应急响应。`,
+      status: 'completed',
+      statusText: '已完成'
+    },
+    {
+      title: '调度下达',
+      time: formatTime(addMinutes(baseTime, 120)),
+      operator: '李明',
+      department: '市应急指挥中心',
+      description: `根据灾情等级判定为${getLevelName(record.level)}，已向相关部门下达调度指令，要求做好防灾减灾工作。`,
+      status: 'completed',
+      statusText: '已完成'
+    },
+    {
+      title: '部门响应',
+      time: formatTime(addMinutes(baseTime, 180)),
+      operator: '王芳',
+      department: '县农业农村局',
+      description: '已组织农技专家赶赴现场，调配应急物资，启动技术指导方案，确保减灾措施落实到位。',
+      status: 'completed',
+      statusText: '已完成'
+    },
+    {
+      title: '处置执行',
+      time: formatTime(addMinutes(baseTime, 360)),
+      operator: '赵强',
+      department: '乡镇农技站',
+      description: `正在执行${record.measures || '灾情处置方案'}，已完成受灾区域排查，正在组织抢收减损工作。`,
+      status: isResolved ? 'completed' : 'processing',
+      statusText: isResolved ? '已完成' : '进行中'
+    },
+    {
+      title: '效果评估',
+      time: formatTime(addMinutes(baseTime, 720)),
+      operator: isResolved ? '刘洋' : '-',
+      department: '县农业农村局',
+      description: isResolved 
+        ? `处置效果良好，挽回损失约${Math.round((record.estimatedLoss || 0) * 0.3 / 10000)}万元，减灾率达到${Math.round(30 + Math.random() * 20)}%，符合结案条件。` 
+        : '待处置完成后进行效果评估',
+      status: isResolved ? 'completed' : 'pending',
+      statusText: isResolved ? '已完成' : '待处理'
+    },
+    {
+      title: '结案归档',
+      time: isResolved ? formatTime(addMinutes(baseTime, 1440)) : '-',
+      operator: isResolved ? '陈静' : '-',
+      department: '市农业农村局',
+      description: isResolved 
+        ? `灾情处置完毕，相关资料已归档，案件编号${record.id}，处置周期约1天。` 
+        : '待完成效果评估后结案归档',
+      status: isResolved ? 'completed' : 'pending',
+      statusText: isResolved ? '已完成' : '待处理'
+    }
+  ]
+  
+  return steps
+}
+
 const handleSearch = () => {
   ElMessage.success(`查询到 ${filteredRecords.value.length} 条灾情记录`)
 }
@@ -395,6 +514,36 @@ const handleSubmitReport = () => {
   color: #606266;
   line-height: 1.6;
   margin-bottom: 8px;
+}
+
+.timeline-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.timeline-title {
+  margin-bottom: 0;
+  font-size: 15px;
+}
+
+.timeline-info {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: #909399;
+}
+
+.timeline-operator,
+.timeline-dept {
+  display: inline-flex;
+  align-items: center;
+}
+
+.timeline-info + .timeline-content {
+  margin-bottom: 0;
 }
 
 .report-media {

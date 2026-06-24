@@ -256,7 +256,8 @@ const handleModule = (mod) => {
     MobileFarmingAdvice: 'MobileFarmingAdvice',
     MobilePlantingRecord: 'MobilePlantingRecord',
     MobileStorageDeclare: 'MobileStorageDeclare',
-    MobilePhotoReport: 'MobilePhotoReport'
+    MobilePhotoReport: 'MobilePhotoReport',
+    MobileWeatherWarning: 'MobileWeatherWarning'
   }
   const routeName = moduleRoutes[mod.route]
   if (routeName) {
